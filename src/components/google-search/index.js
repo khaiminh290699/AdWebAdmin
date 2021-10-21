@@ -3,6 +3,7 @@ import React from "react"
 import { Link } from "react-router-dom";
 import WebTooltip from "../web-tooltip";
 import useGoogleSearchHook from "./hook";
+import { DoubleRightOutlined  } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -29,7 +30,7 @@ function GoogleSearch() {
     />
     <Divider/>
     <Tooltip title={<Text strong italic>View forums of posts and choosing the forums</Text>} >
-      <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("forums")}> Forums </Button>
+      <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("forums")}> Forums <DoubleRightOutlined /> </Button>
     </Tooltip>
   </Card>
   )

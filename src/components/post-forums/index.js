@@ -2,6 +2,7 @@ import { Card, Space, Select, Typography, Button, Table, Divider, Spin } from "a
 import React from "react";
 import WebTooltip from "../web-tooltip";
 import usePostForumsHook from "./hook";
+import { DoubleLeftOutlined, DoubleRightOutlined  } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -28,8 +29,8 @@ function PostForums() {
         dataSource={context.selectedForums}
       />
       <Divider/>
-      <Button style={{ float: "left" }} onClick={() => action.onNext("search")}>Search page</Button>
-      <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("content")}>Write content</Button>
+      <Button disabled={state.isLoading} style={{ float: "left" }} onClick={() => action.onNext("search")}><DoubleLeftOutlined /> Search page </Button>
+      <Button disabled={state.isLoading} style={{ float: "right" }} type="primary" onClick={() => action.onNext("content")}> Write content <DoubleRightOutlined /></Button>
     </Card>
   )
 }

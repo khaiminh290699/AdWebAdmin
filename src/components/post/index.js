@@ -3,6 +3,8 @@ import usePostContext from "./context";
 import usePostHook from "./hook";
 import GoogleSearch from "../google-search";
 import PostForums from "../post-forums";
+import ContentEditor from "../content-editor";
+import AccountSetting from "../account-setting";
 
 function PostCreate() {
   const { state, dispatch } = usePostHook();
@@ -13,6 +15,12 @@ function PostCreate() {
       }
       case "forums": {
         return <PostForums />
+      }
+      case "content": {
+        return <ContentEditor />
+      }
+      case "account": {
+        return <AccountSetting />
       }
     }
   }

@@ -3,7 +3,7 @@ import { Space, Typography } from "antd";
 import usePostContext from "../post/context";
 import Api from "../../api";
 import Socket from "../../socket";
-import { EditOutlined, DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 
 
 const { Text, Link } = Typography;

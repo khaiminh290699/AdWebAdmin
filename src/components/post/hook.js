@@ -21,13 +21,25 @@ function usePostHook(){
     loadForum: true,
     removeForumPosts: [],
     selectedForums: [],
-    refetchSelectForums: true
+    refetchSelectForums: true,
+    content: "",
+    title: "",
+    uploadedFiles: [],
+    accountSettings: []
   });
 
   useEffect(async () => {
     const webs = await api.listWebs();
     const forums = await api.listForums();
     dispatch({ type: "", data: { webs, forums } })
+
+    window.addEventListener("beforeunload", async (event) => {
+      event.preventDefault();
+      if (state.uploadedFiles.length) {
+        await api.removeFileApi(state.uploadedFiles);
+      }
+    })
+
   }, [])
 
   return {
