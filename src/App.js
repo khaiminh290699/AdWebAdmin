@@ -4,6 +4,7 @@ import "./App.css"
 
 import AccountManage from "./components/account";
 import PostCreate from "./components/post";
+import Progressing from "./components/progressing";
 
 function App() {
   return (
@@ -16,8 +17,11 @@ function App() {
           <Route path="/web/manage">
             
           </Route>
-          <Route path="/post">
+          <Route path="/post/create">
             <PostCreate />
+          </Route>
+          <Route path="/progressing/:id">
+            <Progressing />
           </Route>
         </Switch>
       </Router>

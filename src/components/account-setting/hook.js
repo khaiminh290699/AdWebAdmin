@@ -54,7 +54,6 @@ function useAccountSettingHook() {
     },
 
     onCheck: (checked, type, value) => {
-      alert(value);
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       if (!checked) {
         if (type === "create_type") {

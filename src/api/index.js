@@ -80,6 +80,10 @@ class Api {
   createPost = async (post, forums, settings) => {
     return await this.api.post("/post/create", { post, forums, settings });
   }
+
+  getProgressing = async (id) => {
+    return await this.api.get(`/progressing/${id}`);
+  }
 }
 
 export default Api;
