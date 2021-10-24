@@ -11,14 +11,14 @@ const { Text, Link } = Typography;
 function usePostForumsHook() {
   const api = new Api();
   const context = useContext(usePostContext);
-  let [state, setState] = useState({ isLoading: true, web_id: context.state.webs[0].id, forum_id: null });
+  let [state, setState] = useState({ isLoading: true, web_id: context.state.webs[0].id, forum_id: null, error: {} });
 
   useEffect(async () => {
     const { state: { selectedPosts, refetchSelectForums, selectedForums } } = context;
     if (refetchSelectForums && selectedPosts.length) {
       const { responseKey } = await api.getCommunity(selectedPosts);
       const socket = await new Socket().connect("users");
-      socket.on(`get-community-${responseKey}`, async (data) => {
+      socket.on(`get_community_${responseKey}`, async (data) => {
         await socket.close();
         setState({ ...state, isLoading: false });
         context.dispatch({ data: { selectedForums: [ ...selectedForums, ...data.selectedForums ], refetchSelectForums: false } })
@@ -63,6 +63,15 @@ function usePostForumsHook() {
     },
 
     onNext: (pageProgressing) => {
+      if (pageProgressing === "content") {
+        let { state: { selectedForums } } = context;
+        if (!selectedForums.length) {
+          setState({ ...state, error: { forums: "You must selecte some forums" } })
+          return;
+        } else {
+          setState({ ...state, error: { } })
+        }
+      }
       context.dispatch({ type: "pageProgressing", data: { pageProgressing } });
     }
 

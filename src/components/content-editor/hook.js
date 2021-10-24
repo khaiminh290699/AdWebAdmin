@@ -51,7 +51,7 @@ function useContentEditorHook() {
         if (!content) {
           state.error["content"] = "Content mustn't be empty";
         } else if (content.length < 36) {
-          state.error["content"] = "Content mustn't be longer then 36 characters";
+          // state.error["content"] = "Content mustn't be longer then 36 characters";
         } else {
           delete state.error["content"];
         }

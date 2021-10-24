@@ -16,7 +16,7 @@ function GoogleSearch() {
     <List
       bordered
       dataSource={context.searchResult.items || []}
-      footer={<Pagination total={context.searchResult.queries ? context.searchResult.queries.request[0].totalResults : 0} pageSize={5} current={context.pageSearch} onChange={action.onPaginationChange} />}
+      footer={context.searchResult.queries ? <Pagination total={context.searchResult.queries.request[0].totalResults} pageSize={5} current={context.pageSearch} onChange={action.onPaginationChange} /> : null}
       renderItem={post => 
         <List.Item>
           <SearchResultItem 

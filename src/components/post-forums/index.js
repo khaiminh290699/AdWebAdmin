@@ -22,9 +22,13 @@ function PostForums() {
           onSelectChange={action.onSelectChange}
         />
         <Button onClick={action.onSelectClick} type="primary">Selete</Button>
+        {
+          state.error.forums ? <Text strong type="danger">{state.error.forums}</Text> : null
+        }
       </Space>
       <Divider/>
       <Table 
+        pagination={false}
         columns={value.forumsColumns}
         dataSource={context.selectedForums}
       />

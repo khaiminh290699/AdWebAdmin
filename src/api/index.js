@@ -57,12 +57,12 @@ class Api {
     return await this.api.post("/file/remove", { filenames });
   }
 
-  listWebs = async (wheres = []) => {
-    return await this.api.post("/web/list", { wheres });
+  listWebs = async (wheres = [], order = { created_at: -1 }) => {
+    return await this.api.post("/web/list", { wheres, order });
   }
 
-  listAccounts = async (wheres = []) => {
-    return await this.api.post("/account/list", { wheres });
+  listAccounts = async (wheres = [], order = { created_at: -1 }) => {
+    return await this.api.post("/account/list", { wheres, order });
   }
 
   accountUpsert = async (accounts) => {
@@ -73,8 +73,12 @@ class Api {
     return await this.api.post("/web/get-community", { urls });
   }
 
-  listForums = async () => {
-    return await this.api.post("/web/forums");
+  listForums = async (wheres = [], order = { created_at: -1 }) => {
+    return await this.api.post("/web/forums", { wheres, order });
+  }
+
+  createPost = async (post, forums, settings) => {
+    return await this.api.post("/post/create", { post, forums, settings });
   }
 }
 

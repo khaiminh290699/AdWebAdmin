@@ -21,7 +21,7 @@ function Community(props) {
     onStateChange({ isLocking: true })
     const { responseKey } = await api.getCommunity(Object.keys(checkedUrls));
     const socket = await new Socket().connect("users");
-    socket.on(`get-community-${responseKey}`, async (data) => {
+    socket.on(`get_community_${responseKey}`, async (data) => {
       const { communities } = data;
       await socket.close();
       setState({ ...state, isLoading: false });
