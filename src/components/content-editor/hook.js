@@ -44,14 +44,16 @@ function useContentEditorHook() {
         const { state: { title, content } } = context;
         if (!title) {
           state.error["title"] = "Tilte mustn't be empty";
-        } else {
+        } else if (title.length < 36) {
+          state.error["content"] = "Title mustn't be longer then 12 characters";
+        }  else {
           delete state.error["title"];
         }
 
         if (!content) {
           state.error["content"] = "Content mustn't be empty";
         } else if (content.length < 36) {
-          // state.error["content"] = "Content mustn't be longer then 36 characters";
+          state.error["content"] = "Content mustn't be longer then 36 characters";
         } else {
           delete state.error["content"];
         }

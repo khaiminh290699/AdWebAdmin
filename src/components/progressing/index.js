@@ -1,11 +1,11 @@
-import { Card, Progress, Space, Spin, Typography, Tag, Table, Divider } from "antd";
+import { Card, Progress, Space, Spin, Typography, Tag, Table, Divider, Button } from "antd";
 import React from "react";
 import useProgressingHook from "./hook";
 
 const { Text } = Typography;
 
-function Progressing() {
-  const { state, value } = useProgressingHook();
+function Progressing(props) {
+  const { state, value, action } = useProgressingHook(props);
 
   const progressingBar = () => {
     switch(state.progressing.status) {
@@ -44,11 +44,16 @@ function Progressing() {
   return (
     <Card title={<Text>Progressing for posting { state.isLoading ? <Spin/> : null }</Text>}>
       <Space direction="horizontal" size="middle" >
+        <Text>ID : {state.progressing.id}</Text>
+      </Space>
+      <Space direction="horizontal" size="middle" >
         <Text>Status :</Text>
         { tag() }
       </Space>
       <p/>
       { progressingBar() }
+      <p />
+      <Button disabled={state.progressing.status === "waiting" || state.progressing.status === "progressing="} type="primary" onClick={action.onRePost}>Re-Posting</Button> <Text type="secondary">(reposting only fail post and not posted in this progressing)</Text>
       <Divider/>
       <Table 
         dataSource={state.postingStatus}

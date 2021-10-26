@@ -84,6 +84,14 @@ class Api {
   getProgressing = async (id) => {
     return await this.api.get(`/progressing/${id}`);
   }
+
+  getReprogressing = async (id) => {
+    return await this.api.post(`/progressing/re-progress`, { id })
+  }
+
+  getListTimerPost = async (inDate, wheres = []) => {
+    return await this.api.post(`/post/list-timer`, { inDate, wheres });
+  }
 }
 
 export default Api;

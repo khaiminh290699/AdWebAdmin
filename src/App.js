@@ -4,6 +4,7 @@ import "./App.css"
 
 import AccountManage from "./components/account";
 import PostCreate from "./components/post";
+import PostTimer from "./components/post-timer";
 import Progressing from "./components/progressing";
 
 function App() {
@@ -14,8 +15,8 @@ function App() {
           <Route path="/account/manage">
             <AccountManage />
           </Route>
-          <Route path="/web/manage">
-            
+          <Route path="/post/timer">
+            <PostTimer />
           </Route>
           <Route path="/post/create">
             <PostCreate />

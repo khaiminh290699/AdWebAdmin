@@ -89,8 +89,10 @@ function useAccountSettingHook() {
       const settings = accountSettings;
       const data = await api.createPost(post, forums, settings);
       if (data.progressing) {
-        setState({ ...state, progressing: data.progressing })
+        context.dispatch({ progressing: data.progressing, page: "progressing" })
+        return;
       }
+      context.dispatch({ page: "created" })
     }
   }
 

@@ -11,9 +11,10 @@ import { PauseCircleTwoTone, CheckCircleTwoTone, CloseCircleTwoTone  } from '@an
 
 const { Text } = Typography;
 
-function useProgressingHook() {
+function useProgressingHook(props) {
   const api = new Api();
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id || props.id
  
   let [state, setState] = useState({ isLoading: true, progressing: {}, postingStatus: [] });
 
@@ -24,24 +25,22 @@ function useProgressingHook() {
     state.postingStatus = postingStatus;
     setState({ ...state });
 
-    console.log(`progressing_${progressing.id}`)
-
-    const socket = await new Socket().connect("users");
-    socket.on(`progressing_${progressing.id}`, (data) => {
-      console.log(data)
-      const { postingStatus } = data;
-      if (postingStatus) {
-        const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
-        state.postingStatus[index] = {
-          ...state.postingStatus[index],
-          ...postingStatus
+    if (progressing.status != "success" || progressing.status != "fail") {
+      const socket = await new Socket().connect("users");
+      socket.on(`progressing_${progressing.id}`, (data) => {
+        const { postingStatus } = data;
+        if (postingStatus) {
+          const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
+          state.postingStatus[index] = {
+            ...state.postingStatus[index],
+            ...postingStatus
+          }
+          state.postingStatus = [...state.postingStatus];
         }
-        console.log(index, state.postingStatus[index]);
-        state.postingStatus = [...state.postingStatus];
-      }
-      state.progressing = data;
-      setState({ ...state });
-    })
+        state.progressing = data;
+        setState({ ...state });
+      })
+    }
   }, [])
 
   const value = {
@@ -61,13 +60,38 @@ function useProgressingHook() {
         }
 
         return <div style={{ textAlign: 'center' }}><PauseCircleTwoTone twoToneColor="#d4b106" style={{ fontSize: '26px' }} /></div>
-      } }
+      } },
+      { title: "Message", render: (data) => <Text>{data.message}</Text> },
     ]
+  }
+
+  const action = {
+    onRePost: async () => {
+      const { progressing } = await api.getReprogressing(id);
+
+      if (progressing.status != "success" || progressing.status != "fail") {
+        const socket = await new Socket().connect("users");
+        socket.on(`progressing_${progressing.id}`, (data) => {
+          const { postingStatus } = data;
+          if (postingStatus) {
+            const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
+            state.postingStatus[index] = {
+              ...state.postingStatus[index],
+              ...postingStatus
+            }
+            state.postingStatus = [...state.postingStatus];
+          }
+          state.progressing = data;
+          setState({ ...state });
+        })
+      }
+    }
   }
 
   return {
     state,
-    value
+    value,
+    action
   }
 }
 

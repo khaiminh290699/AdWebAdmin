@@ -56,14 +56,14 @@ function AccountSetting() {
     }
   }
 
-  const redirect = () => {
-    if (state.progressing) {
-      return <Redirect to={`/progressing/${state.progressing.id}`} />
-    }
-  }
+  // const redirect = () => {
+  //   if (state.progressing) {
+  //     return <Redirect to={`/progressing/${state.progressing.id}`} />
+  //   }
+  // }
   return (
     <Card title={<Text>Account setting</Text>}>
-      { redirect() }
+      {/* { redirect() } */}
       { modal() }
       <Text>If you want manage your accounts, please <Link href="/account/manage" target="_blank" type="secondary" italic underline>click here</Link> and then click button reload to sync accounts.</Text>
       <p />

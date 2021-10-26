@@ -25,7 +25,8 @@ function usePostHook(){
     content: "",
     title: "",
     uploadedFiles: [],
-    accountSettings: []
+    accountSettings: [],
+    progressing: {}
   });
 
   useEffect(async () => {
