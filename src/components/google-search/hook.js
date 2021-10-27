@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import Api from "../../api";
-import usePostContext from "../post/context";
+import usePostContext from "../post-create/context";
 
 function useGoogleSearchHook() {
   const api = new Api();
@@ -24,7 +24,11 @@ function useGoogleSearchHook() {
       }
 
       if (searchResult === null){
-        searchResult = await api.searchApi(searchQuery, pageSearch, searchNum);
+        const rs = await api.searchApi(searchQuery, pageSearch, searchNum);
+        if (rs.status != 200) {
+          return;
+        }
+        searchResult = rs.data;
         localStorage.setItem(`${searchQuery.trim()}_${pageSearch}`, JSON.stringify({ searchResult, searchAt: new Date() }))
       }
 

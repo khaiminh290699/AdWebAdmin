@@ -4,7 +4,7 @@ import Api from "../../api";
 import Socket from "../../socket";
 import WebTooltip from "../web-tooltip";
 import { Typography } from "antd";
-import PasswordHidden from "../account/password";
+import PasswordHidden from "../account-manage/password";
 
 import { PauseCircleTwoTone, CheckCircleTwoTone, CloseCircleTwoTone  } from '@ant-design/icons';
 
@@ -14,12 +14,16 @@ const { Text } = Typography;
 function useProgressingHook(props) {
   const api = new Api();
   const params = useParams();
-  const id = params.id || props.id
+  const id = params.id || props.id;
  
   let [state, setState] = useState({ isLoading: true, progressing: {}, postingStatus: [] });
 
   useEffect(async () => {
-    const { progressing, postingStatus } = await api.getProgressing(id);
+    const rs = await api.getProgressing(id);
+    if (rs.status != 200) {
+      return;
+    }
+    const { data: { progressing, postingStatus } } = rs;
     state.isLoading = false;
     state.progressing = progressing;
     state.postingStatus = postingStatus;
@@ -67,7 +71,12 @@ function useProgressingHook(props) {
 
   const action = {
     onRePost: async () => {
-      const { progressing } = await api.getReprogressing(id);
+      const rs = await api.reProgressing(id);
+      if (rs.status != 200) {
+        return;
+      }
+
+      const { data: { progressing } } = rs;
 
       if (progressing.status != "success" || progressing.status != "fail") {
         const socket = await new Socket().connect("users");

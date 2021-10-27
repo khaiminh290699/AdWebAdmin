@@ -3,7 +3,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Api from "../../api";
 import Socket from "../../socket";
-import PasswordHidden from "../account/password";
+import PasswordHidden from "../account-manage/password";
 import WebTooltip from "../web-tooltip";
 
 import { PauseCircleTwoTone, CheckCircleTwoTone, CloseCircleTwoTone  } from '@ant-design/icons';
@@ -14,7 +14,11 @@ function usePostTimerHook() {
   const api = new Api();
   let [state, setState] = useState({ timerPosts: [], isLoading: true, inDate: moment(new Date()).startOf("date").toDate() })
   useEffect(async () => {
-    const { timerPosts } = await api.getListTimerPost(state.inDate);
+    const rs = await api.getListTimerPost(state.inDate);
+    if (rs.status != 200) {
+      return;
+    }
+    const { data: { timerPosts } } = rs;
     state.timerPosts = timerPosts;
     state.isLoading = false;
     setState({ ...state });
@@ -41,7 +45,7 @@ function usePostTimerHook() {
       { title: "Account", render: (data) => <Text strong>{data.username}</Text> },
       { title: "Password", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Timer setting", render: (data) =>  <Text>{data.timer_setting}</Text>},
-      { title: "Actual posting", render: (data) =>  <Text>{data.actutal_posting_timer ? moment(data.actutal_posting_timer).format("HH:mm") : waiting}</Text>},
+      { title: "Actual posting", render: (data) =>  <Text>{data.actutal_posting_timer ? moment(data.actutal_posting_timer).format("HH:mm") : "waiting"}</Text>},
       { title: "Status", render: (data) => {
         if (data.status === "success") {
           return <div style={{ textAlign: 'center' }}><CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: '26px' }} /></div>
@@ -63,7 +67,11 @@ function usePostTimerHook() {
       state.isLoading = true;
       setState({ ...state });
 
-      const { timerPosts } = await api.getListTimerPost(state.inDate);
+      const rs = await api.getListTimerPost(state.inDate);
+      if (rs.status != 200) {
+        return;
+      }
+      const { data: { timerPosts } } = rs;
       state.timerPosts = timerPosts;
       state.isLoading = false;
       setState({ ...state });

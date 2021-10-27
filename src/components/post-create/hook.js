@@ -5,6 +5,7 @@ import Api from "../../api";
 function usePostHook(){
   const api = new Api();
   const [state, dispatch] = useReducer((state, action) => {
+    console.log(action.data)
     return {
       ...state,
       ...action.data
@@ -30,8 +31,20 @@ function usePostHook(){
   });
 
   useEffect(async () => {
-    const webs = await api.listWebs();
-    const forums = await api.listForums();
+    const rs = await api.listWebs();
+
+    if (rs.status != 200) {
+      return;
+    }
+    const { data: { webs } } = rs;
+
+    const rsf = await api.listForums();
+
+    if (rsf.status != 200) {
+      return;
+    }
+    const { data: { forums } } = rsf;
+
     dispatch({ type: "", data: { webs, forums } })
 
     window.addEventListener("beforeunload", async (event) => {

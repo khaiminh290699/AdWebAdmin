@@ -1,7 +1,6 @@
-import { Card, Space, Table, Tooltip, Typography, Input, Modal, Button, Divider, Select, Spin } from "antd";
+import { Card, Space, Table, Tooltip, Typography, Input, Modal, Button, Divider, Select, Spin, Switch, Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import Api from "../../api";
-import PasswordHidden from "./password";
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import useAccountManageHook from "./hook";
 
@@ -10,20 +9,39 @@ const { Option } = Select;
 
 function AccountManage() {
   const api = new Api();
-  const { state, action, value } = useAccountManageHook();
-
+  const { context, state, action, value } = useAccountManageHook();
   return (
     <Card title="Account Manage">
-      <Space>
-        <Button type="primary" onClick={action.onCreate}><Text strong><PlusOutlined />Create new</Text></Button>
-        <Tooltip>
-          <Button type="default" onClick={action.onSave}><Text strong><SaveOutlined /> Save</Text></Button>
-        </Tooltip>
-        {
-          state.isLoading ? <Spin /> : <></>
-        }
-      </Space>
-      <Divider/>
+      {/* switch active mode if user is admin */}
+      {
+        context.user && context.user.isAdmin ?
+        <>
+          <Space>
+            <Text>Admin mode :</Text> <Switch checked={state.mode === "admin"} onChange={action.onAdminModeChange}/>
+          </Space>
+          <Divider/>
+        </>
+        :
+        null
+      }
+      {/* admin mode */}
+      {
+        state.mode != "admin" ?
+        <>
+          <Space>
+            <Button type="primary" onClick={action.onCreate}><Text strong><PlusOutlined />Create new</Text></Button>
+            <Tooltip>
+              <Button type="default" onClick={action.onSave}><Text strong><SaveOutlined /> Save</Text></Button>
+            </Tooltip>
+            {
+              state.isLoading ? <Spin /> : <></>
+            }
+          </Space>
+          <Divider/>
+        </>
+        :
+        null
+      }
       <Modal title="Edit account" visible={ state.creating || state.edited != undefined } onCancel={action.onCancel}
         footer={[
           <Button type="primary" onClick={action.onEdit}>
@@ -78,7 +96,7 @@ function AccountManage() {
         bordered={true}
         columns={value.columns} 
         dataSource={state.accounts}
-        pagination={false}
+        pagination={state.mode === "admin" ? { current: state.page, total: state.total, pageSize: value.limit, pageSizeOptions: [value.limit], onChange: action.onPaginationChange } : false}
         rowKey="id"
       />
     </Card>

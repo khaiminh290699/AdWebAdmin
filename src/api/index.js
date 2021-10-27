@@ -22,16 +22,25 @@ class Api {
     })
     
     this.api.interceptors.response.use((response) => {
-      if (response.data.status === 200) {
-        return response.data.data;
-      } else {
-        alert(response.data.message);
-        return;
-      }
+      // if (response.data.status === 200) {
+      //   return response.data.data;
+      // } else {
+      //   alert(response.data.message);
+      //   return Promise.reject(new Error(response.data.message));
+      // }
+      return response.data
     }, (error) => {
       alert(error.message);
       Promise.reject(error);
     })
+  }
+
+  login = async (username, password) => {
+    return await this.api.post("/auth/log-in", { username, password });
+  }
+
+  getInfo = async () => {
+    return await this.api.post("/auth/get-info");
   }
 
   searchApi = async (q, page, num = 5) => {
@@ -61,8 +70,8 @@ class Api {
     return await this.api.post("/web/list", { wheres, order });
   }
 
-  listAccounts = async (wheres = [], order = { created_at: -1 }) => {
-    return await this.api.post("/account/list", { wheres, order });
+  listAccounts = async (wheres = [], order = { created_at: -1 }, pageIndex, pageSize, mode) => {
+    return await this.api.post("/account/list", { wheres, order, pageIndex, pageSize, mode });
   }
 
   accountUpsert = async (accounts) => {
@@ -85,12 +94,21 @@ class Api {
     return await this.api.get(`/progressing/${id}`);
   }
 
-  getReprogressing = async (id) => {
+  reProgressing = async (id) => {
     return await this.api.post(`/progressing/re-progress`, { id })
   }
 
   getListTimerPost = async (inDate, wheres = []) => {
     return await this.api.post(`/post/list-timer`, { inDate, wheres });
+  }
+
+  accountToogle = async (account_id) => {
+    return await this.api.post(`/account/toogle`, { account_id });
+  }
+
+  listPosts = async (wheres, order = { "created_at": -1 }, pageIndex, pageSize, mode) => {
+    return await this.api.post(`/post/list`, { wheres, order, pageSize, pageIndex, mode });
+
   }
 }
 

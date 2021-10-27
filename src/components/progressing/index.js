@@ -6,7 +6,7 @@ const { Text } = Typography;
 
 function Progressing(props) {
   const { state, value, action } = useProgressingHook(props);
-
+  
   const progressingBar = () => {
     switch(state.progressing.status) {
       case "success": {
@@ -17,7 +17,7 @@ function Progressing(props) {
       }
       default: {
         return <Progress 
-          percent={((+state.progressing.progressing_amount / +state.progressing.progressing_total) * 100)} 
+          percent={Math.round((+state.progressing.progressing_amount / +state.progressing.progressing_total) * 100)} 
           status={state.progressing.status === "fail" ? "exception" : "active"}
         />
       }
@@ -46,6 +46,7 @@ function Progressing(props) {
       <Space direction="horizontal" size="middle" >
         <Text>ID : {state.progressing.id}</Text>
       </Space>
+      <p/>
       <Space direction="horizontal" size="middle" >
         <Text>Status :</Text>
         { tag() }
@@ -53,7 +54,7 @@ function Progressing(props) {
       <p/>
       { progressingBar() }
       <p />
-      <Button disabled={state.progressing.status === "waiting" || state.progressing.status === "progressing="} type="primary" onClick={action.onRePost}>Re-Posting</Button> <Text type="secondary">(reposting only fail post and not posted in this progressing)</Text>
+      <Button disabled={state.progressing.status === "waiting" || state.progressing.status === "progressing"} type="primary" onClick={action.onRePost}>Re-Posting</Button> <Text type="secondary">(reposting only fail post and not posted in this progressing)</Text>
       <Divider/>
       <Table 
         dataSource={state.postingStatus}

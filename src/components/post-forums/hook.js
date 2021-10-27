@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Space, Typography } from "antd";
-import usePostContext from "../post/context";
+import usePostContext from "../post-create/context";
 import Api from "../../api";
 import Socket from "../../socket";
 import { DeleteOutlined } from '@ant-design/icons';
@@ -16,12 +16,13 @@ function usePostForumsHook() {
   useEffect(async () => {
     const { state: { selectedPosts, refetchSelectForums, selectedForums } } = context;
     if (refetchSelectForums && selectedPosts.length) {
-      const { responseKey } = await api.getCommunity(selectedPosts);
+      const { data: { responseKey } } = await api.getCommunity(selectedPosts);
       const socket = await new Socket().connect("users");
       socket.on(`get_community_${responseKey}`, async (data) => {
         await socket.close();
         setState({ ...state, isLoading: false });
-        context.dispatch({ data: { selectedForums: [ ...selectedForums, ...data.selectedForums ], refetchSelectForums: false } })
+
+        context.dispatch({ data: { selectedForums: [ ...selectedForums, ...data.selectedForums.filter(forum => !selectedForums.some((selectedForum) => selectedForum.id === forum.id)) ], refetchSelectForums: false } })
       })
     } else {
       setState({ ...state, isLoading: false });

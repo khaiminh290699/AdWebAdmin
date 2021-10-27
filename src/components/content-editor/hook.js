@@ -3,7 +3,7 @@ import {EditorState, ContentState, convertToRaw} from 'draft-js';
 import DraftPasteProcessor from 'draft-js/lib/DraftPasteProcessor';
 import draftToHtml from 'draftjs-to-html';
 import Api from "../../api";
-import usePostContext from "../post/context";
+import usePostContext from "../post-create/context";
 
 function useContentEditorHook() {
   const api = new Api();

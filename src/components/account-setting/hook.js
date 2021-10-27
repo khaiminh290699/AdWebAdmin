@@ -2,8 +2,8 @@ import { Button, Checkbox, Space, Typography } from "antd";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import Api from "../../api";
-import PasswordHidden from "../account/password";
-import usePostContext from "../post/context";
+import PasswordHidden from "../account-manage/password";
+import usePostContext from "../post-create/context";
 import WebTooltip from "../web-tooltip";
 import Socket from "../../socket"
 
@@ -18,9 +18,16 @@ function useAccountSettingHook() {
   useEffect(async () => {
     if (state.reload) {
       const { state: { selectedForums, accountSettings } } = context;
-      const accounts = await api.listAccounts([{ web_key: { $in: selectedForums.map((selectedForum) => selectedForum.web_key) } }], { web_name: 1 });
+      const rs = await api.listAccounts([{ web_key: { $in: selectedForums.map((selectedForum) => selectedForum.web_key) } }], { web_name: 1 });
+      
+      if (rs.status != 200) {
+        return;
+      }
+
+      const { data: { accounts } } = rs;
+
       setState({ ...state, isLoading: false, accounts, reload: false })
-      context.dispatch({ accountSettings: accountSettings.filter((accountSetting) => !accounts.some((account) => account.id === accountSetting.account_id) ) })
+      context.dispatch({ data: { accountSettings: accountSettings.filter((accountSetting) => !accounts.some((account) => account.id === accountSetting.account_id) ) } })
     }
   }, [state.reload])
 
@@ -41,7 +48,7 @@ function useAccountSettingHook() {
           accountSettings.splice(index, 1)
         }
       }
-      context.dispatch({ accountSettings: [...accountSettings] })
+      context.dispatch({ data: { accountSettings: [...accountSettings] } })
 
     },
 
@@ -69,7 +76,7 @@ function useAccountSettingHook() {
         }
       }
       setting[type] = value;
-      context.dispatch({ accountSettings: [...context.state.accountSettings] })
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
 
     onReload: () => {
@@ -85,20 +92,24 @@ function useAccountSettingHook() {
       const post = {
         content, title
       }
-      const forums = selectedForums.map((selectedForum) =>selectedForum.id);
+      const forums = selectedForums.map((selectedForum) => selectedForum.id);
       const settings = accountSettings;
-      const data = await api.createPost(post, forums, settings);
-      if (data.progressing) {
-        context.dispatch({ progressing: data.progressing, page: "progressing" })
+      const rs = await api.createPost(post, forums, settings);
+      if (rs.status != 200) {
         return;
       }
-      context.dispatch({ page: "created" })
+      const { data } = rs;
+      if (data.progressing) {
+        context.dispatch({ data: { progressing: data.progressing, pageProgressing: "progressing" } })
+        return;
+      }
+      context.dispatch({ data: { pageProgressing: "created" } })
     }
   }
 
   const value = {
     accountColumns: [
-      { title: "Selected", width: "1%", render: (data) => <Checkbox checked={context.state.accountSettings.some((accountSetting) => accountSetting.account_id === data.id)} onChange={(event) => action.onSelectAccount(event.target.checked, data.id)} /> },
+      { title: "Selected", width: "1%", render: (data) => <Checkbox disabled={data.disable} checked={context.state.accountSettings.some((accountSetting) => accountSetting.account_id === data.id)} onChange={(event) => action.onSelectAccount(event.target.checked, data.id)} /> },
       { title: "Account", width: "10%", render: (data) => <Text>{data.username}</Text> },
       { title: "Password",  width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Website",  width: "15%", render: (data) => <WebTooltip web={data}><Link href={data.web_url}>{data.web_name}</Link></WebTooltip> },

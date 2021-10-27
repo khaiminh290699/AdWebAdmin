@@ -6,6 +6,7 @@ import PostForums from "../post-forums";
 import ContentEditor from "../content-editor";
 import AccountSetting from "../account-setting";
 import Progressing from "../progressing";
+import { Redirect } from "react-router";
 
 function PostCreate() {
   const { state, dispatch } = usePostHook();
@@ -25,6 +26,9 @@ function PostCreate() {
       }
       case "progressing": {
         return <Progressing id={state.progressing.id} />
+      }
+      case "created": {
+        return <Redirect to="/post/manage" />
       }
     }
   }
