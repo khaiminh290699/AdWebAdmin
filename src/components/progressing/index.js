@@ -12,7 +12,7 @@ function Progressing(props) {
       case "success": {
         return <Progress percent={100} />
       }
-      case "waiting": {
+      case "waiting", "removed": {
         return null;
       }
       default: {
@@ -38,6 +38,9 @@ function Progressing(props) {
       case "waiting": {
         return <Tag color="orange">waiting</Tag>
       }
+      case "removed": {
+        return <Tag color="red">removed</Tag>
+      }
     }
   }
 
@@ -54,7 +57,10 @@ function Progressing(props) {
       <p/>
       { progressingBar() }
       <p />
-      <Button disabled={state.progressing.status === "waiting" || state.progressing.status === "progressing"} type="primary" onClick={action.onRePost}>Re-Posting</Button> <Text type="secondary">(reposting only fail post and not posted in this progressing)</Text>
+      <Space size="large">
+        <Button disabled={state.progressing.status != "progressing"} onClick={action.onCancel}>Cancel</Button>
+        <Button disabled={state.progressing.status === "waiting" || state.progressing.status === "progressing"} type="primary" onClick={action.onRePost}>Re-progressing</Button> <Text type="secondary">(reposting only fail post and not posted in this progressing)</Text>
+      </Space>
       <Divider/>
       <Table 
         dataSource={state.postingStatus}

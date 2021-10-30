@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Space, Switch, Typography } from "antd";
+import { Button, Card, Divider, Space, Switch, Typography, Table, Spin } from "antd";
 import React from "react";
 import { PlusOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ function PostManage() {
   const { context, state, action, value } = usePostManageHook();
 
   return (
-    <Card title={<Text>Post Manage</Text>}>
+    <Card title={<Text>Post Manage {state.isLoading ? <Spin /> : null}</Text>}>
       {/* switch active mode if user is admin */}
       {
         context.user && context.user.isAdmin ?
@@ -33,7 +33,11 @@ function PostManage() {
         </Button>
       </Space>
       <Divider/>
-
+      <Table 
+        dataSource={state.posts}
+        columns={value.columns}
+        pagination={{ disabled: state.isLoading, current: state.page, pageSize: value.limit, total: state.total, pageSizeOptions: [value.limit], onChange: action.onPaginationChange }}
+      />
     </Card>
   )
 }

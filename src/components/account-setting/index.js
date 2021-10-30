@@ -1,10 +1,11 @@
-import { Button, Card, Divider, Typography, Table, Modal, Space, Checkbox, TimePicker, Spin } from "antd";
+import { Button, Card, Divider, Typography, Table, Modal, Space, Checkbox, TimePicker, Spin, DatePicker } from "antd";
 import React from "react";
 import useAccountSettingHook from "./hook";
-import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
+import { DoubleLeftOutlined, DoubleRightOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { Redirect } from "react-router";
 
+const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
 function AccountSetting() {
@@ -14,7 +15,9 @@ function AccountSetting() {
     if (state.setting) {
       const setting = context.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       return (
-        <Modal visible={true}
+        <Modal
+          width={600}
+          visible={true}
           title={<Text>Setting for account: <Text strong>{state.setting.username}</Text></Text>}
           onCancel={action.onCancel}
           footer={<></>}
@@ -35,7 +38,34 @@ function AccountSetting() {
           <br /><br />
           <Text strong>Timer setting :</Text>
           <br /><br />
-          <Space size="large">
+          {
+            setting.timers.map((timer, index) => {
+              return (
+                <>
+                  <div>
+                    <Space>
+                      <Text strong>Timer :</Text>
+                      <TimePicker 
+                        format={format} 
+                        value={moment(timer.timer_at)}
+                        onChange={(value) => action.onTimeChange(value, index)}
+                      />
+                      <Text strong>Date :</Text>
+                      <RangePicker 
+                        value={{"0": timer.from_date, "1": timer.to_date}}
+                        // style={{ width: "210px" }}
+                        onChange={(value) => action.onTimeRangeChange(value, index)}
+                      />
+                      <DeleteOutlined onClick={() => action.onRemoveTimerSetting(index)} />
+                    </Space>
+                  </div>
+                  <p/>
+                </>
+              )
+            })
+          }
+          <Button type="dashed" onClick={action.onAddTimer} block icon={<PlusOutlined />}>Add timer</Button>
+          {/* <Space size="large">
             <p></p><p></p><p></p>
             <Checkbox 
               checked={setting.timer_setting === "not"} 
@@ -50,7 +80,7 @@ function AccountSetting() {
                 action.onCheck(true, "timer_setting", value)
               }}
             />
-          </Space>
+          </Space> */}
         </Modal>
       )
     }
@@ -75,8 +105,10 @@ function AccountSetting() {
         dataSource={state.accounts}
       />
       <Divider/>
-      <Button style={{ float: "left" }} onClick={() => action.onNext("content")}><DoubleLeftOutlined /> Write content </Button>
-      <Button style={{ float: "right" }} type="primary" onClick={action.onCreatePost}>Create post<DoubleRightOutlined/> </Button>
+      { state.error ? <Text strong type="danger">{state.error}</Text> : null }
+      <br/>
+      <Button disabled={state.isLoading}  style={{ float: "left" }} onClick={() => action.onNext("content")}><DoubleLeftOutlined /> Write content </Button>
+      <Button disabled={state.isLoading} style={{ float: "right" }} type="primary" onClick={action.onCreatePost}>Create post<DoubleRightOutlined/> </Button>
     </Card>
   )
 }

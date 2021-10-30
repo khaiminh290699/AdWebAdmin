@@ -94,6 +94,17 @@ function useProgressingHook(props) {
           setState({ ...state });
         })
       }
+    },
+
+    onCancel: async () => {
+      const rs = await api.cancelProgressing(id);
+      if (rs.status != 200) {
+        return;
+      }
+
+      const { data: { progressing } } = rs;
+      state.progressing = progressing;
+      setState({ ...state });
     }
   }
 

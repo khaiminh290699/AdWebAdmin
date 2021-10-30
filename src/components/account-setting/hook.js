@@ -13,7 +13,7 @@ function useAccountSettingHook() {
   const api = new Api();
   const format = "HH:mm";
   const context = useContext(usePostContext);
-  const [state, setState] = useState({ isLoading: true, accounts: [], setting: null, reload: true, progressing: null });
+  const [state, setState] = useState({ isLoading: true, accounts: [], setting: null, reload: true, progressing: null, error: null });
 
   useEffect(async () => {
     if (state.reload) {
@@ -40,7 +40,7 @@ function useAccountSettingHook() {
           accountSettings.push({
             account_id,
             create_type: "create_only",
-            timer_setting: "not"
+            timers: []
           })
         }
       } else {
@@ -87,6 +87,16 @@ function useAccountSettingHook() {
       context.dispatch({ type: "pageProgressing", data: { pageProgressing } });
     },
 
+    onAddTimer: () => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers.push({
+        timer_at: moment(),
+        from_date: moment().startOf("date"),
+        to_date: moment().endOf("date")
+      })
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
     onCreatePost: async () => {
       const { content, title, selectedForums, accountSettings } = context.state;
       const post = {
@@ -94,8 +104,10 @@ function useAccountSettingHook() {
       }
       const forums = selectedForums.map((selectedForum) => selectedForum.id);
       const settings = accountSettings;
+      setState({ ...state, isLoading: true })
       const rs = await api.createPost(post, forums, settings);
       if (rs.status != 200) {
+        setState({ ...state, isLoading: false, error: rs.message });
         return;
       }
       const { data } = rs;
@@ -104,6 +116,26 @@ function useAccountSettingHook() {
         return;
       }
       context.dispatch({ data: { pageProgressing: "created" } })
+    },
+
+    onTimeChange: (value, index) => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers[index].timer_at = value;
+      console.log(context.state.accountSettings);
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
+    onTimeRangeChange: (value, index) => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers[index].from_date = value[0].startOf("date");
+      setting.timers[index].to_date = value[1].endOf("date");
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
+    onRemoveTimerSetting: (index) => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers.splice(index, 1);
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     }
   }
 
@@ -130,20 +162,27 @@ function useAccountSettingHook() {
         const selected = accountSettings.filter((accountSetting) => accountSetting.account_id === data.id)[0];
         if (selected) {
           return (
-            <table>
-              <tr>
-                <th style={{width: "30%"}}></th>
-                <th></th>
-              </tr>
-              <tr>
-                <td><Text strong>Create type</Text></td> 
-                <td>: {selected.create_type === "create_only" ? "Create only" : "Create & post"}</td>
-              </tr>
-              <tr>
-                <td><Text strong>Timer setting</Text></td> 
-                <td>: {selected.timer_setting === "not" ? "No setting" : moment(selected.timer_setting).format(format)}</td>
-              </tr>
-            </table>
+            <>
+              <Space>
+                <Text strong>Create type</Text> :{selected.create_type === "create_only" ? "Create only" : "Create & post"}
+              </Space>
+              {
+                selected.timers.length ?
+                <>
+                  <p/>
+                  <Text strong>Timer setting :</Text>
+                  <ul>
+                    {
+                      selected.timers.map((timer) => {
+                        return <li>At <Text strong>{moment(timer.timer_at).format(format)}</Text>, from date  <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to  <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text></li>
+                      })
+                    }
+                  </ul>
+                </>
+                :
+                null
+              }
+            </>
           )
         }
         return <Text strrong>No selected</Text>

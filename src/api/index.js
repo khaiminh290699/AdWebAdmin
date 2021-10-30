@@ -108,7 +108,14 @@ class Api {
 
   listPosts = async (wheres, order = { "created_at": -1 }, pageIndex, pageSize, mode) => {
     return await this.api.post(`/post/list`, { wheres, order, pageSize, pageIndex, mode });
+  }
 
+  togglePost = async (post_id) => {
+    return await this.api.post(`/post/toggle`, { post_id });
+  }
+
+  cancelProgressing = async (progressing_id) => {
+    return await this.api.post(`/progressing/cancel`, { progressing_id });
   }
 }
 
