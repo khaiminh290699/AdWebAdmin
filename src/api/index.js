@@ -121,6 +121,26 @@ class Api {
   getOnePost = async (id) => {
     return await this.api.get(`/post/${id}`);
   }
+
+  listUsers = async (wheres = [], order = { "created_at": -1 }, page, limit) => {
+    return await this.api.post(`/auth/users`, { wheres, order, pageSize: limit, pageIndex: page });
+  }
+
+  setPermission = async (user_id, permission) => {
+    return await this.api.post(`/auth/set-permission`, { user_id, permission });
+  }
+
+  resetPassword = async (user_id, password) => {
+    return await this.api.post(`/auth/reset-password`, { user_id, password });
+  }
+
+  createUser = async (username, password) => {
+    return await this.api.post(`/auth/sign-in`, { username, password });
+  }
+
+  toggleUser = async (user_id) => {
+    return await this.api.post(`/auth/toggle-activate`, { user_id });
+  }
 }
 
 export default Api;

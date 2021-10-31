@@ -62,6 +62,7 @@ function usePostTimerHook() {
     columns: [
       { title: "Website", render: (data) => <WebTooltip web={data} ><Typography.Link href={data.web_url} type="secondary" strong>{data.web_name}</Typography.Link></WebTooltip> },
       { title: "Forums", render: (data) => <Typography.Link href={data.forum_url} strong>{data.forum_name}</Typography.Link> },
+      { title: "User", render: (data) => <Text strong>{data.user_username}</Text> },
       { title: "Account", render: (data) => <Text strong>{data.username}</Text> },
       { title: "Password", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Timer setting", render: (data) =>  <Text>{data.timer_at}</Text>},

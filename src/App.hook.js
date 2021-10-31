@@ -17,6 +17,7 @@ function useAppHook(){
     const rs = await api.getInfo();
 
     if (rs.status != 200) {
+      alert(rs.message);
       return;
     }
     const { data: { user } } = rs;

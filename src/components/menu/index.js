@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Layout, Menu, Typography } from 'antd';
 import { Link } from "react-router-dom";
+import useAppContext from "../../App.context";
 
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
 
 function MenuLayout(props) {
+
+  const context = useContext(useAppContext);
+
   const headerMenu = () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -34,6 +38,16 @@ function MenuLayout(props) {
     if (token) {
       return (
         <>
+          {
+            context.state.user && context.state.user.isAdmin ? 
+            <Menu.Item>
+              <Link style={{ color: "black", fontWeight: "bold" }} to="/user/manage">
+                User
+              </Link>
+            </Menu.Item>
+            :
+            null
+          }
           <Menu.Item>
             <Link style={{ color: "black", fontWeight: "bold" }} to="/account/manage">
               Account
