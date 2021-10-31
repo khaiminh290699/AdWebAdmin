@@ -51,6 +51,12 @@ function usePostTimerHook() {
     })
   }, [])
 
+  useEffect(() => () => {
+    if (socket) {
+      socket.disconnect();
+    }
+  }, [])
+
   const value = {
     limit: 5,
     columns: [

@@ -12,6 +12,7 @@ import { PauseCircleTwoTone, CheckCircleTwoTone, CloseCircleTwoTone  } from '@an
 const { Text } = Typography;
 
 function useProgressingHook(props) {
+  let socket = null;
   const api = new Api();
   const params = useParams();
   const id = params.id || props.id;
@@ -29,21 +30,25 @@ function useProgressingHook(props) {
     state.postingStatus = postingStatus;
     setState({ ...state });
 
-    if (progressing.status != "success" || progressing.status != "fail") {
-      const socket = await new Socket().connect("users");
-      socket.on(`progressing_${progressing.id}`, (data) => {
-        const { postingStatus } = data;
-        if (postingStatus) {
-          const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
-          state.postingStatus[index] = {
-            ...state.postingStatus[index],
-            ...postingStatus
-          }
-          state.postingStatus = [...state.postingStatus];
+    socket = await new Socket().connect("users");
+    socket.on(`progressing_${progressing.id}`, (data) => {
+      const { postingStatus } = data;
+      if (postingStatus) {
+        const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
+        state.postingStatus[index] = {
+          ...state.postingStatus[index],
+          ...postingStatus
         }
-        state.progressing = data;
-        setState({ ...state });
-      })
+        state.postingStatus = [...state.postingStatus];
+      }
+      state.progressing = data;
+      setState({ ...state });
+    })
+  }, [])
+
+  useEffect(() => () => {
+    if (socket) {
+      socket.disconnect();
     }
   }, [])
 
@@ -79,20 +84,22 @@ function useProgressingHook(props) {
       const { data: { progressing } } = rs;
 
       if (progressing.status != "success" || progressing.status != "fail") {
-        const socket = await new Socket().connect("users");
-        socket.on(`progressing_${progressing.id}`, (data) => {
-          const { postingStatus } = data;
-          if (postingStatus) {
-            const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
-            state.postingStatus[index] = {
-              ...state.postingStatus[index],
-              ...postingStatus
+        if (!socket) {
+          socket = await new Socket().connect("users");
+          socket.on(`progressing_${progressing.id}`, (data) => {
+            const { postingStatus } = data;
+            if (postingStatus) {
+              const index = state.postingStatus.findIndex((posting) => posting.id === postingStatus.id);
+              state.postingStatus[index] = {
+                ...state.postingStatus[index],
+                ...postingStatus
+              }
+              state.postingStatus = [...state.postingStatus];
             }
-            state.postingStatus = [...state.postingStatus];
-          }
-          state.progressing = data;
-          setState({ ...state });
-        })
+            state.progressing = data;
+            setState({ ...state });
+          })
+        }
       }
     },
 

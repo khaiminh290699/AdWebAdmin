@@ -19,7 +19,6 @@ function useLoginHook() {
       localStorage.setItem("token", user.token);
       delete user.token;
       localStorage.setItem("user", JSON.stringify(user));
-      console.log(localStorage.getItem("token"));
       setState({ ...state, logined: true, isLoading: false })
     },
 

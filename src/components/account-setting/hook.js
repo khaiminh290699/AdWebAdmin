@@ -1,11 +1,10 @@
-import { Button, Checkbox, Space, Typography } from "antd";
+import { Button, Checkbox, Space, Typography, Tag } from "antd";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import Api from "../../api";
 import PasswordHidden from "../account-manage/password";
 import usePostContext from "../post-create/context";
 import WebTooltip from "../web-tooltip";
-import Socket from "../../socket"
 
 const { Text, Link } = Typography;
 
@@ -13,7 +12,7 @@ function useAccountSettingHook() {
   const api = new Api();
   const format = "HH:mm";
   const context = useContext(usePostContext);
-  const [state, setState] = useState({ isLoading: true, accounts: [], setting: null, reload: true, progressing: null, error: null });
+  const [state, setState] = useState({ isLoading: true, accounts: [], forums: [], setting: null, reload: true, progressing: null, error: null, selectingForum: null });
 
   useEffect(async () => {
     if (state.reload) {
@@ -26,20 +25,25 @@ function useAccountSettingHook() {
 
       const { data: { accounts } } = rs;
 
-      setState({ ...state, isLoading: false, accounts, reload: false })
+      const rs2 = await api.listForums([{ "forums.id": { $in: selectedForums.map((selectedForum) => selectedForum.id) } }], { forum_name: 1 })
+      const { data: { forums } } = rs2;
+
+      setState({ ...state, isLoading: false, accounts, forums, reload: false })
       context.dispatch({ data: { accountSettings: accountSettings.filter((accountSetting) => !accounts.some((account) => account.id === accountSetting.account_id) ) } })
     }
   }, [state.reload])
 
   const action = {
     onSelectAccount: (checked, account_id) => {
-      const { state: { accountSettings } } = context;
-      const index = accountSettings.findIndex(accountSetting => accountSetting.account_id === account_id)
+      const { state: { accountSettings, selectedForums } } = context;
+      const index = accountSettings.findIndex(accountSetting => accountSetting.account_id === account_id);
+      const account = state.accounts.filter((account) => account.id === account_id)[0];
       if (checked) {
         if (index === -1) {
           accountSettings.push({
             account_id,
-            create_type: "create_only",
+            web: { id: account.web_id, key: account.web_key },
+            forums: [...selectedForums.filter((forum) => forum.web_key === account.web_key)],
             timers: []
           })
         }
@@ -57,7 +61,7 @@ function useAccountSettingHook() {
     },
 
     onCancel: () => {
-      setState({ ...state, setting: null })
+      setState({ ...state, setting: null, selectingForum: null })
     },
 
     onCheck: (checked, type, value) => {
@@ -87,6 +91,34 @@ function useAccountSettingHook() {
       context.dispatch({ type: "pageProgressing", data: { pageProgressing } });
     },
 
+    onSelectForumChange: (value) => {
+      setState({ ...state, selectingForum: value });
+    },
+
+    onAddForum: () => {
+      if (!state.selectingForum) {
+        return;
+      }
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      if (setting.forums.some((forum) => forum.id === state.selectingForum)) {
+        return;
+      }
+      const forum = context.state.selectedForums.filter((selectedForum) => selectedForum.id === state.selectingForum)[0];
+      setting.forums.push(forum);
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
+    onRemoveForum: (event, index) => {
+      event.preventDefault();
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      if (!setting.forums.length) {
+        alert("This is the last forum!");
+        return;
+      }
+      setting.forums.splice(index, 1);
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
     onAddTimer: () => {
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       setting.timers.push({
@@ -94,6 +126,12 @@ function useAccountSettingHook() {
         from_date: moment().startOf("date"),
         to_date: moment().endOf("date")
       })
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
+    onRemoveTimer: (index) => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers.splice(index, 1);
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
 
@@ -121,7 +159,6 @@ function useAccountSettingHook() {
     onTimeChange: (value, index) => {
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       setting.timers[index].timer_at = value;
-      console.log(context.state.accountSettings);
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
 
@@ -131,12 +168,6 @@ function useAccountSettingHook() {
       setting.timers[index].to_date = value[1].endOf("date");
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
-
-    onRemoveTimerSetting: (index) => {
-      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
-      setting.timers.splice(index, 1);
-      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
-    }
   }
 
   const value = {
@@ -163,21 +194,40 @@ function useAccountSettingHook() {
         if (selected) {
           return (
             <>
-              <Space>
-                <Text strong>Create type</Text> :{selected.create_type === "create_only" ? "Create only" : "Create & post"}
-              </Space>
+              {
+                selected.forums.length ?
+                <>
+                  <p/>
+                  <Text strong>Forums setting :</Text>
+                  <div>
+                    {
+                      selected.forums.map((forum) => {
+                        return (
+                          <Tag>{forum.forum_name}</Tag>
+                        )
+                      })
+                    }
+                  </div>
+                </>
+                :
+                null
+              }
               {
                 selected.timers.length ?
                 <>
                   <p/>
                   <Text strong>Timer setting :</Text>
-                  <ul>
+                  <div>
                     {
                       selected.timers.map((timer) => {
-                        return <li>At <Text strong>{moment(timer.timer_at).format(format)}</Text>, from date  <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to  <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text></li>
+                        return (
+                          <div>
+                            - <Text strong>{moment(timer.timer_at).format(format)}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>
+                          </div>
+                        )
                       })
                     }
-                  </ul>
+                  </div>
                 </>
                 :
                 null

@@ -8,7 +8,7 @@ const { Text } = Typography;
 function PostTimer() {
   const { context, state, value, action } = usePostTimerHook();
   return (
-    <Card title={<Text>Timer posting status for date {moment(state.inDate).format("DD/MM/YYYY")} { state.isLoading ? <Spin /> : null }</Text>}>
+    <Card title={<Text>Timer Posting Status For Date {moment(state.inDate).format("DD/MM/YYYY")} { state.isLoading ? <Spin /> : null }</Text>}>
       {
         context.user && context.user.isAdmin ?
         <>

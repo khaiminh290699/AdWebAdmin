@@ -5,7 +5,6 @@ import Api from "../../api";
 function usePostHook(){
   const api = new Api();
   const [state, dispatch] = useReducer((state, action) => {
-    console.log(action.data)
     return {
       ...state,
       ...action.data

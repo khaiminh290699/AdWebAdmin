@@ -1,9 +1,7 @@
 import React from "react";
-import { Layout, Menu, Breadcrumb, Typography } from 'antd';
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import { Layout, Menu, Typography } from 'antd';
 import { Link } from "react-router-dom";
 
-const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
 
@@ -77,11 +75,12 @@ function MenuLayout(props) {
             <Breadcrumb.Item>App</Breadcrumb.Item>
           </Breadcrumb> */}
           <Content
-            className="site-layout-background"
+            className="site-layout-background scrollable-container"
             style={{
               padding: 24,
               margin: 0,
-              minHeight: 600,
+              height: 600,
+              overflow: "auto",
             }}
           >
             {

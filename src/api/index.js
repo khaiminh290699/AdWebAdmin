@@ -117,6 +117,10 @@ class Api {
   cancelProgressing = async (progressing_id) => {
     return await this.api.post(`/progressing/cancel`, { progressing_id });
   }
+
+  getOnePost = async (id) => {
+    return await this.api.get(`/post/${id}`);
+  }
 }
 
 export default Api;

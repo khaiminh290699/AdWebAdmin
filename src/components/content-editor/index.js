@@ -10,7 +10,7 @@ const { Text } = Typography;
 function ContentEditor() {
   const { context, state, action } = useContentEditorHook(); 
   return (
-    <Card title="Write content">
+    <Card title="Write Content">
       <Text strong>Title :</Text>
       <Input value={context.title} onChange={(event) => action.onTitleChange(event.target.value)} />
       {

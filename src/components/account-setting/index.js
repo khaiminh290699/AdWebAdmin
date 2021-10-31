@@ -1,9 +1,9 @@
-import { Button, Card, Divider, Typography, Table, Modal, Space, Checkbox, TimePicker, Spin, DatePicker } from "antd";
+import { Button, Card, Divider, Typography, Table, Modal, Space, Select, TimePicker, Spin, DatePicker, Tag } from "antd";
 import React from "react";
 import useAccountSettingHook from "./hook";
 import { DoubleLeftOutlined, DoubleRightOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from "moment";
-import { Redirect } from "react-router";
+import WebTooltip from "../web-tooltip";
 
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
@@ -22,22 +22,30 @@ function AccountSetting() {
           onCancel={action.onCancel}
           footer={<></>}
         >
-          <Text strong>Create setting :</Text>
-          <br /><br />
-          <Space size="large">
-            <p></p><p></p><p></p>
-            <Checkbox 
-              checked={setting.create_type === "create_only"} 
-              onChange={(event) => action.onCheck(event.target.checked, "create_type", "create_only")}
-            > create only </Checkbox>
-            <Checkbox 
-              checked={setting.create_type === "create_and_post"} 
-              onChange={(event) => action.onCheck(event.target.checked, "create_type", "create_and_post")}
-            > create {'&'} post </Checkbox>
+          <Space>
+            <Text strong>Select forums :</Text>
+            <Select value={state.selectingForum} onChange={action.onSelectForumChange} style={{ width: "350px" }} >
+              {
+                state.forums.filter((forum) => forum.web_key === setting.web.key).map(forum => {
+                  return (
+                    <Select.Option value={forum.id}>{forum.forum_name}</Select.Option>
+                  )
+                })
+              }
+            </Select>
+            <Button type="primary" disabled={!state.selectingForum} onClick={action.onAddForum} >Select</Button>
           </Space>
-          <br /><br />
-          <Text strong>Timer setting :</Text>
-          <br /><br />
+          <p/>
+          {
+            setting.forums.map((forum, index) => {
+              return <Tag color="magenta" style={{ marginBottom: "5px" }} closable onClose={(event) => action.onRemoveForum(event, index)}><WebTooltip web={forum} >{ forum.forum_name }</WebTooltip></Tag>
+            })
+          }
+          <p />
+          <div>
+            <Text strong>Timer setting :</Text>
+          </div>
+          <p/>
           {
             setting.timers.map((timer, index) => {
               return (
@@ -56,7 +64,7 @@ function AccountSetting() {
                         // style={{ width: "210px" }}
                         onChange={(value) => action.onTimeRangeChange(value, index)}
                       />
-                      <DeleteOutlined onClick={() => action.onRemoveTimerSetting(index)} />
+                      <DeleteOutlined onClick={() => action.onRemoveTimer(index)} />
                     </Space>
                   </div>
                   <p/>
@@ -65,34 +73,13 @@ function AccountSetting() {
             })
           }
           <Button type="dashed" onClick={action.onAddTimer} block icon={<PlusOutlined />}>Add timer</Button>
-          {/* <Space size="large">
-            <p></p><p></p><p></p>
-            <Checkbox 
-              checked={setting.timer_setting === "not"} 
-              onChange={(event) => action.onCheck(event.target.checked, "timer_setting", "not")}
-            > not setting</Checkbox>
-            <TimePicker 
-              disabled={setting.timer_setting === "not"} 
-              format={format} 
-              value={setting.timer_setting != "not" ? moment(setting.timer_setting) : null}
-              onChange={(value) => {
-                alert(value);
-                action.onCheck(true, "timer_setting", value)
-              }}
-            />
-          </Space> */}
         </Modal>
       )
     }
   }
 
-  // const redirect = () => {
-  //   if (state.progressing) {
-  //     return <Redirect to={`/progressing/${state.progressing.id}`} />
-  //   }
-  // }
   return (
-    <Card title={<Text>Account setting</Text>}>
+    <Card title={<Text>Account Setting</Text>}>
       {/* { redirect() } */}
       { modal() }
       <Text>If you want manage your accounts, please <Link href="/account/manage" target="_blank" type="secondary" italic underline>click here</Link> and then click button reload to sync accounts.</Text>

@@ -11,6 +11,7 @@ import PostCreate from "./components/post-create";
 import PostManage from "./components/post-manage";
 import PostTimer from "./components/post-timer";
 import Progressing from "./components/progressing";
+import PostDetail from "./components/post-detail";
 
 function App() {
 
@@ -20,7 +21,7 @@ function App() {
     const token = localStorage.getItem("token");
     if (token) {
       return (
-        <>
+        <Switch>
           <Route path="/account/manage">
             <AccountManage />
           </Route>
@@ -33,13 +34,16 @@ function App() {
           <Route path="/post/create">
             <PostCreate />
           </Route>
+          <Route path="/post/:id">
+            <PostDetail />
+          </Route>
           <Route path="/progressing/:id">
             <Progressing />
           </Route>
           <Route path="/">
             <div></div>
           </Route>
-        </>
+        </Switch>
       )
     }
 

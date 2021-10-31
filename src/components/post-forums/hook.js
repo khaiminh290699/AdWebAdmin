@@ -9,6 +9,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 const { Text, Link } = Typography;
 
 function usePostForumsHook() {
+  let socket = null;
   const api = new Api();
   const context = useContext(usePostContext);
   let [state, setState] = useState({ isLoading: true, web_id: context.state.webs[0].id, forum_id: null, error: {} });
@@ -17,7 +18,7 @@ function usePostForumsHook() {
     const { state: { selectedPosts, refetchSelectForums, selectedForums } } = context;
     if (refetchSelectForums && selectedPosts.length) {
       const { data: { responseKey } } = await api.getCommunity(selectedPosts);
-      const socket = await new Socket().connect("users");
+      socket = await new Socket().connect("users");
       socket.on(`get_community_${responseKey}`, async (data) => {
         await socket.close();
         setState({ ...state, isLoading: false });
@@ -26,6 +27,12 @@ function usePostForumsHook() {
       })
     } else {
       setState({ ...state, isLoading: false });
+    }
+  }, [])
+
+  useEffect(() => () => {
+    if (socket) {
+      socket.disconnect();
     }
   }, [])
 

@@ -10,7 +10,7 @@ const { Text } = Typography;
 function GoogleSearch() {
   const { context, state, action } = useGoogleSearchHook();
   return (
-    <Card title={<Text strong>Search forums website</Text>}>
+    <Card title={<Text strong>Search Forums Website</Text>}>
     <Input.Search value={context.searchQuery} loading={state.isSearching} allowClear enterButton="Search" size="large" onChange={action.onSearchChange} onSearch={action.onSearch} />
     <Divider/>
     <List

@@ -45,13 +45,13 @@ function Progressing(props) {
   }
 
   return (
-    <Card title={<Text>Progressing for posting { state.isLoading ? <Spin/> : null }</Text>}>
+    <Card title={<Text>Progressing For Posting { state.isLoading ? <Spin/> : null }</Text>}>
       <Space direction="horizontal" size="middle" >
-        <Text>ID : {state.progressing.id}</Text>
+        <Text strong>ID : {state.progressing.id}</Text>
       </Space>
       <p/>
       <Space direction="horizontal" size="middle" >
-        <Text>Status :</Text>
+        <Text strong>Status :</Text>
         { tag() }
       </Space>
       <p/>
