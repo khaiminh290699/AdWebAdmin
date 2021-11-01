@@ -13,6 +13,7 @@ import PostTimer from "./components/post-timer";
 import Progressing from "./components/progressing";
 import PostDetail from "./components/post-detail";
 import UserManage from "./components/user-manage";
+import BackLink from "./components/backlink";
 
 function App() {
 
@@ -61,6 +62,9 @@ function App() {
           
             <Route path="/auth/login">
               <Login />
+            </Route>
+            <Route path="/redirect/:backlink_id/:post_id/:forum_id/:account_id">
+              <BackLink />
             </Route>
             <Route render={redirect}>
             </Route>

@@ -18,7 +18,8 @@ function useContentEditorHook() {
       :
       EditorState.createEmpty(),
 
-    error: {}
+    error: {},
+    link: null
   })
 
   const action = {
@@ -27,7 +28,8 @@ function useContentEditorHook() {
     },
 
     onEditorStateChange: (editorState) => {
-      context.dispatch({ data: { content: draftToHtml(convertToRaw(editorState.getCurrentContent())) } })
+      const content = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+      context.dispatch({ data: { content } })
       setState({ ...state, editorState })
     },
 
@@ -63,6 +65,33 @@ function useContentEditorHook() {
         return;
       }
       context.dispatch({ type: "pageProgressing", data: { pageProgressing } });
+    },
+
+    onLinkInputChange: (link) => {
+      setState({ ...state, link })
+    },
+
+    onAddLink: async () => {
+      if (!state.link) {
+        state.error.link = "Link is required!"
+        setState({ ...state });
+        return;
+      }
+      const rs = await api.createBackLink(state.link);
+      if (rs.status != 200) {
+        return;
+      }
+      const { data: { backlink } } = rs;
+      const { id, link_url, backlink_url } = backlink;
+      context.state.content += `<a href='${backlink_url}'>${link_url}</a>`;
+      context.state.backlinks.push(id);
+      context.dispatch({ data: { content: context.state.content, backlinks: context.state.backlinks } });
+      state.editorState = EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          DraftPasteProcessor.processHTML(context.state.content)
+        )
+      );
+      setState({ ...state });
     }
   }
 

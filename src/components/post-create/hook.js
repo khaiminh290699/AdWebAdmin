@@ -26,7 +26,8 @@ function usePostHook(){
     title: "",
     uploadedFiles: [],
     accountSettings: [],
-    progressing: {}
+    progressing: {},
+    backlinks: []
   });
 
   useEffect(async () => {
@@ -51,6 +52,10 @@ function usePostHook(){
       if (state.uploadedFiles.length) {
         await api.removeFileApi(state.uploadedFiles);
       }
+      console.log(state.backlinks);
+      // if (state.backlinks.length) {
+      //   await api.removeBacklink(state.backlinks);
+      // }
     })
 
   }, [])

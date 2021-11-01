@@ -3,7 +3,7 @@ import React from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import useContentEditorHook from "./hook";
-import { DoubleLeftOutlined, DoubleRightOutlined  } from '@ant-design/icons';
+import { DoubleLeftOutlined, DoubleRightOutlined, LinkOutlined  } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -30,6 +30,12 @@ function ContentEditor() {
       {
         state.error.content ? <Text type="danger" strong>{state.error.content}</Text> : null
       }
+      <Divider/>
+      <Space>
+        <Text strong> Link : </Text>
+        <Input value={state.link} onChange={(event) => action.onLinkInputChange(event.target.value)}></Input>
+        <Button type="primary" onClick={action.onAddLink}><LinkOutlined /> Add link</Button>
+      </Space>
       <Divider/>
       <Button style={{ float: "left" }} onClick={() => action.onNext("forums")}> <DoubleLeftOutlined/> Forums </Button>
       <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("account")}> Account setting <DoubleRightOutlined/></Button>

@@ -136,24 +136,24 @@ function useAccountSettingHook() {
     },
 
     onCreatePost: async () => {
-      const { content, title, selectedForums, accountSettings } = context.state;
+      const { content, title, selectedForums, accountSettings, backlinks } = context.state;
       const post = {
         content, title
       }
       const forums = selectedForums.map((selectedForum) => selectedForum.id);
       const settings = accountSettings;
       setState({ ...state, isLoading: true })
-      const rs = await api.createPost(post, forums, settings);
+      const rs = await api.createPost(post, forums, settings, backlinks);
       if (rs.status != 200) {
         setState({ ...state, isLoading: false, error: rs.message });
         return;
       }
       const { data } = rs;
       if (data.progressing) {
-        context.dispatch({ data: { progressing: data.progressing, pageProgressing: "progressing" } })
+        context.dispatch({ data: { progressing: data.progressing, pageProgressing: "progressing", backlinks: [], uploadedFiles: [] } })
         return;
       }
-      context.dispatch({ data: { pageProgressing: "created" } })
+      context.dispatch({ data: { pageProgressing: "created", backlinks: [], uploadedFiles: [] } })
     },
 
     onTimeChange: (value, index) => {

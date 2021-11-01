@@ -86,8 +86,8 @@ class Api {
     return await this.api.post("/web/forums", { wheres, order });
   }
 
-  createPost = async (post, forums, settings) => {
-    return await this.api.post("/post/create", { post, forums, settings });
+  createPost = async (post, forums, settings, backlinks) => {
+    return await this.api.post("/post/create", { post, forums, settings, backlinks });
   }
 
   getProgressing = async (id) => {
@@ -140,6 +140,20 @@ class Api {
 
   toggleUser = async (user_id) => {
     return await this.api.post(`/auth/toggle-activate`, { user_id });
+  }
+
+  createBackLink = async (link_url) => {
+    const str = window.location.href.split("/");
+    const web_host = `${str[0]}//${str[2]}/redirect`
+    return await this.api.post(`/post/backlink/create`, { link_url, web_host });
+  }
+
+  removeBacklink = async (ids) => {    
+    return await this.api.post(`/post/backlink/delete`, { ids });
+  }
+
+  getBackLink = async (backlink_id, post_id, forum_id, account_id ) => {
+    return await this.api.post(`/post/backlink/get`, { backlink_id, post_id, forum_id, account_id });
   }
 }
 
