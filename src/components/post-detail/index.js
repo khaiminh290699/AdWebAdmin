@@ -19,7 +19,7 @@ function PostDetail() {
       }
       default: {
         return <Progress 
-          percent={Math.round((+state.progressing.progressing_amount / +state.progressing.progressing_total) * 100)} 
+          percent={Math.round((+state.progressing.done / +state.progressing.total) * 100)} 
           status={state.progressing.status === "fail" ? "exception" : "active"}
         />
       }

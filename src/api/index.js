@@ -152,8 +152,8 @@ class Api {
     return await this.api.post(`/post/backlink/delete`, { ids });
   }
 
-  getBackLink = async (backlink_id, post_id, forum_id, account_id ) => {
-    return await this.api.post(`/post/backlink/get`, { backlink_id, post_id, forum_id, account_id });
+  getBackLink = async (backlink_id, post_id, forum_id, setting_id, type, timer_at) => {
+    return await this.api.post(`/post/backlink/get`, { backlink_id, post_id, forum_id, setting_id, type, timer_at });
   }
 }
 

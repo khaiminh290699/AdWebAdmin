@@ -37,7 +37,7 @@ function usePostTimerHook() {
     setState({ ...state });
 
     socket = await new Socket().connect("users");
-    socket.on("timer_posting", (data) => {
+    socket.on(`timer_posting_${moment(new Date()).startOf("date").format("DD_MM_YYYY")}`, (data) => {
       const { postingStatus } = data;
       const index = state.timerPosts.findIndex((timerPost) => timerPost.setting_id === postingStatus.setting_id && timerPost.forum_id === postingStatus.forum_id);
       state.timerPosts[index] = {

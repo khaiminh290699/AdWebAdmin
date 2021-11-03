@@ -9,8 +9,8 @@ function useBackLinkHook() {
   const [state, setState] = useState({ backlink: null, error: null })
 
   useEffect(async () => {
-    const { backlink_id, post_id, forum_id, account_id } = params;
-    const rs = await api.getBackLink(backlink_id, post_id, forum_id, account_id );
+    let { backlink_id, post_id, forum_id, setting_id, type, timer_at } = params;
+    const rs = await api.getBackLink(backlink_id, post_id, forum_id, setting_id, type, timer_at );
     if (rs.status != 200) {
       setState({ ...state, error: rs.message })
       return;

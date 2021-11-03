@@ -63,9 +63,14 @@ function App() {
             <Route path="/auth/login">
               <Login />
             </Route>
-            <Route path="/redirect/:backlink_id/:post_id/:forum_id/:account_id">
-              <BackLink />
-            </Route>
+            <Switch>
+              <Route path="/redirect/:backlink_id/:post_id/:forum_id/:setting_id/:type/:timer_at">
+                <BackLink />
+              </Route>
+              <Route path="/redirect/:backlink_id/:post_id/:forum_id/:setting_id/:type">
+                <BackLink />
+              </Route>
+            </Switch>
             <Route render={redirect}>
             </Route>
           
