@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Typography, Table, Modal, Space, Select, TimePicker, Spin, DatePicker, Tag } from "antd";
+import { Button, Card, Divider, Typography, Table, Modal, Space, Select, TimePicker, Spin, DatePicker, Tag, Checkbox } from "antd";
 import React from "react";
 import useAccountSettingHook from "./hook";
 import { DoubleLeftOutlined, DoubleRightOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -23,8 +23,13 @@ function AccountSetting() {
           footer={<></>}
         >
           <Space>
-            <Text strong>Select forums :</Text>
-            <Select value={state.selectingForum} onChange={action.onSelectForumChange} style={{ width: "350px" }} >
+            <Text strong style={{ display: "inline-block", width: "150px" }}>Create only </Text><Text strong>:</Text>
+            <Checkbox checked={setting.is_create_only} onChange={action.onCheckCreateOnly}></Checkbox>
+          </Space>
+          <p />
+          <Space>
+            <Text strong style={{ display: "inline-block", width: "150px" }}>Select forums </Text><Text strong>:</Text>
+            <Select value={state.selectingForum} onChange={action.onSelectForumChange} style={{ width: "300px" }} >
               {
                 state.forums.filter((forum) => forum.web_key === setting.web.key).map(forum => {
                   return (
@@ -42,9 +47,9 @@ function AccountSetting() {
             })
           }
           <p />
-          <div>
-            <Text strong>Timer setting :</Text>
-          </div>
+          <Space>
+            <Text strong style={{ display: "inline-block", width: "150px" }}>Timer setting </Text><Text strong>:</Text>
+          </Space>
           <p/>
           {
             setting.timers.map((timer, index) => {

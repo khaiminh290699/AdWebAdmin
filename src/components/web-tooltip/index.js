@@ -4,7 +4,7 @@ import { Tooltip, Typography } from "antd";
 const { Text, Link } = Typography;
 
 function WebTooltip(props) {
-  const { web } = props;
+  const web = props.web || { web_url: null, web_key: null, web_name: null }
   return (
     <Tooltip title={
       <table>

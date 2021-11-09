@@ -7,6 +7,9 @@ import PasswordHidden from "../account-manage/password";
 import moment from "moment";
 import Socket from "../../socket";
 
+import { CheckCircleTwoTone  } from '@ant-design/icons';
+
+
 const { Text } = Typography;
 
 function usePostDetailHook() {
@@ -49,8 +52,16 @@ function usePostDetailHook() {
 
   const value = {
     accountColumns: [
-      { title: "Account", width: "15%", render: (data) => <Text strong>{data.username}</Text> },
+      { title: "Account", width: "10%", render: (data) => <Text strong>{data.username}</Text> },
       { title: "Password", width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
+      {
+        title: "Create only", with: "5%", render: (data) => {
+          if (data.is_create_only) {
+            return <div style={{ textAlign: 'center' }}><CheckCircleTwoTone twoToneColor="#52c41a" /></div>
+          }
+          return null
+        }
+      },
       { title: "Timer", width: "30%", render: (data) => {
         if (!data.timerSettings.length) {
           return <Text type="warning" strong>- Not Setting Yet</Text>

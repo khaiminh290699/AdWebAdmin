@@ -63,6 +63,11 @@ function MenuLayout(props) {
               Timer
             </Link>
           </Menu.Item>
+          <Menu.Item>
+            <Link style={{ color: "black", fontWeight: "bold" }} to="/statistic">
+              Statistic
+            </Link>
+          </Menu.Item>
         </>
       )
     }

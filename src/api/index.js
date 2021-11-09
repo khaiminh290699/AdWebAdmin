@@ -28,10 +28,10 @@ class Api {
       //   alert(response.data.message);
       //   return Promise.reject(new Error(response.data.message));
       // }
-      return response.data
+      return response.data;
     }, (error) => {
-      alert(error.message);
       Promise.reject(error);
+      return { status: 500, message: error.message };
     })
   }
 
@@ -154,6 +154,31 @@ class Api {
 
   getBackLink = async (backlink_id, post_id, forum_id, setting_id, type, timer_at) => {
     return await this.api.post(`/post/backlink/get`, { backlink_id, post_id, forum_id, setting_id, type, timer_at });
+  }
+
+  getInTime = async (from, to) => {
+    return await this.api.post(`/statistic/in-time`, { from, to });
+  }
+
+  getTotal = async (from, to) => {
+    return await this.api.post(`/statistic/get-total`, { from, to });
+  }
+
+  updatePost = async (post, accountSettings) => {
+    return await this.api.post(`/post/update`, { post, accountSettings });
+  }
+
+  createWeb = async (web_url, web_name, web_key, actions) => {
+    return await this.api.post(`/web/upsert`, { web_url, web_name, web_key, actions });
+  }
+
+  updateWeb = async (id, web_url, web_name, web_key, actions) => {
+    return await this.api.post(`/web/upsert`, { id, web_url, web_name, web_key, actions });
+  }
+
+  getOneWeb = async (id) => {
+    return await this.api.get(`/web/${id}`);
+
   }
 }
 

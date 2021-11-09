@@ -44,7 +44,8 @@ function useAccountSettingHook() {
             account_id,
             web: { id: account.web_id, key: account.web_key },
             forums: [...selectedForums.filter((forum) => forum.web_key === account.web_key)],
-            timers: []
+            timers: [],
+            is_create_only: false
           })
         }
       } else {
@@ -64,24 +65,24 @@ function useAccountSettingHook() {
       setState({ ...state, setting: null, selectingForum: null })
     },
 
-    onCheck: (checked, type, value) => {
-      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
-      if (!checked) {
-        if (type === "create_type") {
-          if (value === "create_only") {
-            value = "create_and_post"
-          } else {
-            value = "create_only"
-          }
-        }
+    // onCheck: (checked, type, value) => {
+    //   const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+    //   if (!checked) {
+    //     if (type === "create_type") {
+    //       if (value === "create_only") {
+    //         value = "create_and_post"
+    //       } else {
+    //         value = "create_only"
+    //       }
+    //     }
 
-        if (type === "timer_setting") {
-          value = moment().set("millisecond", 0).set("second", 0).set("millisecond", 0).toDate();
-        }
-      }
-      setting[type] = value;
-      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
-    },
+    //     if (type === "timer_setting") {
+    //       value = moment().set("millisecond", 0).set("second", 0).set("millisecond", 0).toDate();
+    //     }
+    //   }
+    //   setting[type] = value;
+    //   context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    // },
 
     onReload: () => {
       setState({ ...state, reload: true })
@@ -111,7 +112,7 @@ function useAccountSettingHook() {
     onRemoveForum: (event, index) => {
       event.preventDefault();
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
-      if (!setting.forums.length) {
+      if (!setting.forums.length || !(setting.forums.length - 1)) {
         alert("This is the last forum!");
         return;
       }
@@ -168,6 +169,13 @@ function useAccountSettingHook() {
       setting.timers[index].to_date = value[1].endOf("date");
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
+
+    onCheckCreateOnly: (event) => {
+      const checked = event.target.checked;
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.is_create_only = checked;
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    }
   }
 
   const value = {
@@ -194,6 +202,13 @@ function useAccountSettingHook() {
         if (selected) {
           return (
             <>
+              {
+                selected.is_create_only ? 
+                <p>
+                  <Text type="secondary" italic >(create only)</Text>
+                </p>
+                :null
+              }
               {
                 selected.forums.length ?
                 <>

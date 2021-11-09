@@ -8,6 +8,7 @@ class Socket {
       const socket = io(`${process.env.REACT_APP_SOCKET_SERVER || "http://localhost:3002"}/${namespace}`, {
         auth: { token },
         transports: ["polling"],
+        reconnection: false
       });
     
       socket.on("connect", () => {

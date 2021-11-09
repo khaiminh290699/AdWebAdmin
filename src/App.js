@@ -14,6 +14,9 @@ import Progressing from "./components/progressing";
 import PostDetail from "./components/post-detail";
 import UserManage from "./components/user-manage";
 import BackLink from "./components/backlink";
+import Statistic from "./components/statistic";
+import PostUpdate from "./components/post-update";
+import WebCreate from "./components/web-create";
 
 function App() {
 
@@ -24,6 +27,15 @@ function App() {
     if (token) {
       return (
         <Switch>
+          <Route path="/web/create">
+            <WebCreate />
+          </Route>
+          <Route path="/web/:id">
+            <WebCreate />
+          </Route>
+          <Route path="/statistic">
+            <Statistic />
+          </Route>
           <Route path="/user/manage">
             <UserManage />
           </Route>
@@ -38,6 +50,9 @@ function App() {
           </Route>
           <Route path="/post/create">
             <PostCreate />
+          </Route>
+          <Route path="/post/update/:id">
+            <PostUpdate />
           </Route>
           <Route path="/post/:id">
             <PostDetail />
@@ -58,8 +73,7 @@ function App() {
     <useAppContext.Provider value={{ state, dispatch }}>
       <Router>
         <Switch>
-          <MenuLayout>
-          
+          <MenuLayout>        
             <Route path="/auth/login">
               <Login />
             </Route>

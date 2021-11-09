@@ -82,7 +82,8 @@ function useProgressingHook(props) {
       }
 
       const { data: { progressing } } = rs;
-
+      state.progressing.status = progressing.status;
+      setState({ ...state })
       if (progressing.status != "success" || progressing.status != "fail") {
         if (!socket) {
           socket = await new Socket().connect("users");

@@ -1,4 +1,4 @@
-import { Card, Table, Spin, Typography, Tag, Progress, Space } from "antd";
+import { Card, Table, Spin, Typography, Tag, Progress, Space, Divider, Button } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import WebTooltip from "../web-tooltip";
@@ -48,6 +48,14 @@ function PostDetail() {
 
   return (
     <Card title={state.isLoading ? <>Loading <Spin/></> : <>Post: <Text strong type="secondary">{state.post.title} { state.post.is_deleted ? <Tag color="red">Deleted</Tag> : null }</Text></>} >
+      <Space>
+        <Button style={{ backgroundColor: "yellow" }}>
+          <Link to={`/post/update/${state.post.id}`}>
+           <Text strong style={{ color: "black" }}>Update</Text>
+          </Link>
+        </Button>
+      </Space>
+      <Divider />
       <Card title={<Text>Progressing For Posting</Text>}>
         <Space direction="horizontal" size="middle" >
           <Text strong>ID : <Link to={`/progressing/${state.progressing.id}`}>{state.progressing.id}</Link></Text>
