@@ -17,13 +17,17 @@ function usePostForumsHook() {
   useEffect(async () => {
     const { state: { selectedPosts, refetchSelectForums, selectedForums } } = context;
     if (refetchSelectForums && selectedPosts.length) {
-      const { data: { responseKey } } = await api.getCommunity(selectedPosts);
-      socket = await new Socket().connect("users");
+      const rs = await api.getCommunity(selectedPosts);
+      if (rs.status != 200) {
+        return;
+      }
+      const { data: { responseKey, notSupporting, notSupportingUrls } } = rs;
+      context.dispatch({ data: { notSupporting, notSupportingUrls, refetchSelectForums: false } })
+      const socket = await new Socket().connect("users");
       socket.on(`get_community_${responseKey}`, async (data) => {
-        await socket.close();
         setState({ ...state, isLoading: false });
-
-        context.dispatch({ data: { selectedForums: [ ...selectedForums, ...data.selectedForums.filter(forum => !selectedForums.some((selectedForum) => selectedForum.id === forum.id)) ], refetchSelectForums: false } })
+        context.dispatch({ data: { errorGetForums: data.errorGetForums, selectedForums: [ ...selectedForums, ...data.selectedForums.filter(forum => !selectedForums.some((selectedForum) => selectedForum.id === forum.id)) ], refetchSelectForums: false } })
+        await socket.close();
       })
     } else {
       setState({ ...state, isLoading: false });
@@ -110,6 +114,18 @@ function usePostForumsHook() {
             <DeleteOutlined style={{ fontSize: "18px", color: "#ff4d4f" }} onClick={() => action.onRemoveForumPosts(data.id)} />
           </Space>
         )
+      } }
+    ],
+
+    errorColumns: [
+      { title: "Web URL", witdh: "40%", render: (data) => <Text strong>{ data.web_url }</Text> },
+      { title: "Message", witdh: "60%", render: (data) => {
+        return data.messages.map((message) => {
+          return <>
+            <Text> - {message}</Text>
+            <p />
+          </>
+        })
       } }
     ]
   }

@@ -17,6 +17,7 @@ import BackLink from "./components/backlink";
 import Statistic from "./components/statistic";
 import PostUpdate from "./components/post-update";
 import WebCreate from "./components/web-create";
+import WebManage from "./components/web-mange";
 
 function App() {
 
@@ -27,6 +28,9 @@ function App() {
     if (token) {
       return (
         <Switch>
+          <Route path="/web/manage">
+            <WebManage />
+          </Route>
           <Route path="/web/create">
             <WebCreate />
           </Route>

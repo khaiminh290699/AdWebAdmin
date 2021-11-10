@@ -18,12 +18,15 @@ function useAppHook(){
 
     if (rs.status != 200) {
       alert(rs.message);
+      if (rs.status === 403) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
       return;
     }
     const { data: { user } } = rs;
+    localStorage.setItem("user", JSON.stringify(user));
     dispatch({ data: { user } })
-
-
   }, [])
 
   return {

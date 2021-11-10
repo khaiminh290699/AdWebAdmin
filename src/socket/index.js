@@ -5,6 +5,7 @@ class Socket {
   connect = async (namespace) => {
     return new Promise((resolve, reject) => {
       const token = localStorage.getItem("token");
+      console.log(`${process.env.REACT_APP_SOCKET_SERVER || "http://localhost:3002"}/${namespace}`)
       const socket = io(`${process.env.REACT_APP_SOCKET_SERVER || "http://localhost:3002"}/${namespace}`, {
         auth: { token },
         transports: ["polling"],
@@ -16,6 +17,7 @@ class Socket {
       });
   
       socket.on("connect_error", (err) => {
+        console.log(err)
         return reject(err);
       });
   

@@ -38,6 +38,11 @@ function MenuLayout(props) {
     if (token) {
       return (
         <>
+          <Menu.Item>
+            <Link style={{ color: "black", fontWeight: "bold" }} to="/web/manage">
+              Web
+            </Link>
+          </Menu.Item>
           {
             context.state.user && context.state.user.isAdmin ? 
             <Menu.Item>

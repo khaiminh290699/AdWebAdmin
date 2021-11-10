@@ -85,7 +85,7 @@ function useContentEditorHook() {
       const { id, link_url } = backlink;
 
       const str = window.location.href.split("/");
-      context.state.content += `<a href='${str[0]}//${str[2]}/redirect/${backlink.id}/:post_id/:forum_id/:setting_id/:type'>${link_url}</a>`;
+      context.state.content += `<a href="${str[0]}//${str[2]}/redirect/${backlink.id}/:post_id/:forum_id/:setting_id/:type">${link_url}</a>`;
       context.state.backlinks.push(id);
       context.dispatch({ data: { content: context.state.content, backlinks: context.state.backlinks } });
       state.editorState = EditorState.createWithContent(

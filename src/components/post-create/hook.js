@@ -27,7 +27,10 @@ function usePostHook(){
     uploadedFiles: [],
     accountSettings: [],
     progressing: {},
-    backlinks: []
+    backlinks: [],
+    notSupporting: [],
+    notSupportingUrls: [],
+    errorGetForums: []
   });
 
   useEffect(async () => {

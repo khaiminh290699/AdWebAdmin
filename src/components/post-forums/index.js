@@ -10,7 +10,7 @@ function PostForums() {
   const { context, state, action, value } = usePostForumsHook();
   return (
     <Card title={<Text>Forums { state.isLoading ? <Spin/> : null }</Text>}>
-      <Space direction="horizontal" size="large">
+      {/* <Space direction="horizontal" size="large">
         <WebSeletor 
           webs={context.webs}
           selected={state.web_id}
@@ -25,13 +25,39 @@ function PostForums() {
         {
           state.error.forums ? <Text strong type="danger">{state.error.forums}</Text> : null
         }
+      </Space> */}
+      <p />
+      <Space>
+        <Text type="danger">
+          {
+            context.notSupporting.length ? "* Some website is not create: ": null
+          }
+          {
+            context.notSupporting.map((url) => url)
+          }
+        </Text>
       </Space>
-      <Divider/>
+      {
+        context.notSupporting.length ? <Divider/> : null
+      }
       <Table 
         pagination={false}
         columns={value.forumsColumns}
         dataSource={context.selectedForums}
       />
+      {
+        context.errorGetForums.length ? 
+        (
+          <>
+            <Divider />
+            <Text strong>Some error when get forum from post :</Text>
+            <Table 
+              dataSource={context.errorGetForums}
+              columns={value.errorColumns}
+            />
+          </>
+        ) : null
+      }
       <Divider/>
       <Button disabled={state.isLoading} style={{ float: "left" }} onClick={() => action.onNext("search")}><DoubleLeftOutlined /> Search page </Button>
       <Button disabled={state.isLoading} style={{ float: "right" }} type="primary" onClick={() => action.onNext("content")}> Write content <DoubleRightOutlined /></Button>

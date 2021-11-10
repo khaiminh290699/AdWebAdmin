@@ -13,9 +13,6 @@ function useUserManageHook() {
   const context = useContext(useAppContext);
 
   useEffect(async () => {
-    if (!context.state.user || !context.state.user.isAdmin) {
-      return;
-    }
     const rs = await api.listUsers([], { "username": -1 }, state.page, value.limit);
     if (rs.status != 200) {
       return;

@@ -66,8 +66,8 @@ class Api {
     return await this.api.post("/file/remove", { filenames });
   }
 
-  listWebs = async (wheres = [], order = { created_at: -1 }) => {
-    return await this.api.post("/web/list", { wheres, order });
+  listWebs = async (wheres = [], order = { created_at: -1 }, pageIndex, pageSize) => {
+    return await this.api.post("/web/list", { wheres, order, pageIndex, pageSize });
   }
 
   listAccounts = async (wheres = [], order = { created_at: -1 }, pageIndex, pageSize, mode) => {
