@@ -98,8 +98,8 @@ class Api {
     return await this.api.post(`/progressing/re-progress`, { id })
   }
 
-  getListTimerPost = async (inDate, wheres = []) => {
-    return await this.api.post(`/post/list-timer`, { inDate, wheres });
+  getListTimerPost = async (inDate, wheres = [], order = {}) => {
+    return await this.api.post(`/post/list-timer`, { inDate, wheres, order });
   }
 
   accountToogle = async (account_id) => {

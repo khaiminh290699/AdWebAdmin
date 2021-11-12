@@ -137,7 +137,6 @@ function usePostUpdateHook(props = {}) {
         web_name: account.web_name,
         forumSettings: [...state.forums.filter((forum) => forum.web_key === account.web_key)],
         timerSettings: [],
-        is_create_only: true,
         is_update: true
       })
       state.account = null;
@@ -177,10 +176,10 @@ function usePostUpdateHook(props = {}) {
 
     onRemoveForum: (event, index) => {
       event.preventDefault();
-      if (!(state.setting.forumSettings.length -1 )) {
-        alert("This is the last forum!");
-        return;
-      }
+      // if (!(state.setting.forumSettings.length -1 )) {
+      //   alert("This is the last forum!");
+      //   return;
+      // }
       if (!state.setting.setting_id) {
         state.setting.forumSettings.splice(index, 1);
       }
@@ -189,6 +188,7 @@ function usePostUpdateHook(props = {}) {
 
     onAddTimer: () => {
       state.setting.timerSettings.push({
+        forum_id: state.forums[0].forum_id,
         timer_at: moment(),
         from_date: moment().startOf("date"),
         to_date: moment().endOf("date")
@@ -220,8 +220,17 @@ function usePostUpdateHook(props = {}) {
         content
       }
 
-      await api.updatePost(post, accountSettings);
+      const rs = await api.updatePost(post, accountSettings);
+      if (rs.status != 200) {
+        alert(rs.message);
+        return;
+      }
       history.go(0);
+    },
+
+    onChangeSelectForum: (index, value) => {
+      state.setting.timerSettings[index].forum_id = value;
+      setState({ ...state })
     }
 
   }
@@ -231,7 +240,7 @@ function usePostUpdateHook(props = {}) {
       { title: "Account", width: "10%", render: (data) => <Text>{data.username}</Text> },
       { title: "Password",  width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Website",  width: "15%", render: (data) => <WebTooltip web={data}><Link href={data.web_url}>{data.web_name}</Link></WebTooltip> },
-      { title: "Setting",  width: "25%", render: (data,  _, index) => {
+      { title: "Setting",  width: "10%", render: (data,  _, index) => {
         return (
           <Space>
             <Button onClick={() => action.onSettingClick(index)} type="primary">Setting</Button>
@@ -245,17 +254,10 @@ function usePostUpdateHook(props = {}) {
         return (
           <>
             {
-              data.is_create_only ? 
-              <p>
-                <Text type="secondary" italic >(create only)</Text>
-              </p>
-              :null
-            }
-            {
               data.forumSettings.length ?
               <>
                 <p/>
-                <Text strong>Forums setting :</Text>
+                <Text strong>Forums setting <Text type="secondary">(for posting when create)</Text> :</Text>
                 <div>
                   {
                     data.forumSettings.map((forum) => {
@@ -277,9 +279,10 @@ function usePostUpdateHook(props = {}) {
                 <div>
                   {
                     data.timerSettings.map((timer) => {
+                      const forum = state.forums.filter((forum) => forum.forum_id === timer.forum_id)[0];
                       return (
                         <div>
-                          - <Text strong>{moment(timer.timer_at).isValid() ? moment(timer.timer_at).format(format) : timer.timer_at}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>
+                          - <Text strong>{moment(timer.timer_at).isValid() ? moment(timer.timer_at).format(format) : timer.timer_at}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>, with forum forums: <Link href={forum.forum_url}><Text strong>{forum.forum_name}</Text></Link> <Text type="secondary">({forum.web_name})</Text>.
                         </div>
                       )
                     })

@@ -45,7 +45,6 @@ function useAccountSettingHook() {
             web: { id: account.web_id, key: account.web_key },
             forums: [...selectedForums.filter((forum) => forum.web_key === account.web_key)],
             timers: [],
-            is_create_only: false
           })
         }
       } else {
@@ -112,10 +111,10 @@ function useAccountSettingHook() {
     onRemoveForum: (event, index) => {
       event.preventDefault();
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
-      if (!setting.forums.length || !(setting.forums.length - 1)) {
-        alert("This is the last forum!");
-        return;
-      }
+      // if (!setting.forums.length || !(setting.forums.length - 1)) {
+      //   alert("This is the last forum!");
+      //   return;
+      // }
       setting.forums.splice(index, 1);
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
@@ -123,6 +122,7 @@ function useAccountSettingHook() {
     onAddTimer: () => {
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       setting.timers.push({
+        forum_id: state.forums[0].id,
         timer_at: moment(),
         from_date: moment().startOf("date"),
         to_date: moment().endOf("date")
@@ -173,7 +173,12 @@ function useAccountSettingHook() {
     onCheckCreateOnly: (event) => {
       const checked = event.target.checked;
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
-      setting.is_create_only = checked;
+      context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
+    },
+
+    onChangeSelectForum: (index, forum_id) => {
+      const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
+      setting.timers[index].forum_id = forum_id;
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     }
   }
@@ -203,17 +208,10 @@ function useAccountSettingHook() {
           return (
             <>
               {
-                selected.is_create_only ? 
-                <p>
-                  <Text type="secondary" italic >(create only)</Text>
-                </p>
-                :null
-              }
-              {
                 selected.forums.length ?
                 <>
                   <p/>
-                  <Text strong>Forums setting :</Text>
+                  <Text strong>Forums setting <Text type="secondary">(for posting when create)</Text> :</Text>
                   <div>
                     {
                       selected.forums.map((forum) => {
@@ -235,9 +233,10 @@ function useAccountSettingHook() {
                   <div>
                     {
                       selected.timers.map((timer) => {
+                        const forum = state.forums.filter((forum) => forum.id === timer.forum_id)[0];
                         return (
                           <div>
-                            - <Text strong>{moment(timer.timer_at).format(format)}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>
+                            - At <Text strong>{moment(timer.timer_at).format(format)}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>, with forum forums: <Link href={forum.forum_url}><Text strong>{forum.forum_name}</Text></Link> <Text type="secondary">({forum.web_name})</Text>.
                           </div>
                         )
                       })

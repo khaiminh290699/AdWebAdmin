@@ -26,7 +26,7 @@ function usePostTimerHook() {
   })
 
   useEffect(async () => {
-    const rs = await api.getListTimerPost(state.inDate);
+    const rs = await api.getListTimerPost(state.inDate, [], { timer_at: -1 });
     if (rs.status != 200) {
       return;
     }
@@ -38,8 +38,8 @@ function usePostTimerHook() {
 
     socket = await new Socket().connect("users");
     socket.on(`timer_posting_${moment(new Date()).startOf("date").format("DD_MM_YYYY")}`, (data) => {
-      const { postingStatus } = data;
-      const index = state.timerPosts.findIndex((timerPost) => timerPost.setting_id === postingStatus.setting_id && timerPost.forum_id === postingStatus.forum_id);
+      const postingStatus = data;
+      const index = state.timerPosts.findIndex((timerPost) => timerPost.timer_setting_id === postingStatus.timer_setting_id);
       state.timerPosts[index] = {
         ...state.timerPosts[index],
         status: postingStatus.status,
@@ -78,6 +78,16 @@ function usePostTimerHook() {
         }
 
         return <div style={{ textAlign: 'center' }}><PauseCircleTwoTone twoToneColor="#d4b106" style={{ fontSize: '26px' }} /></div>
+      } },
+      { title: "Message", render: (data) => {
+        if (data.status === "success") {
+          return <Text type="success">{data.message}</Text>
+        }
+
+        if (data.status === "fail") {
+          return <Text type="danger">{data.message}</Text>
+        }
+        return <Text type="warning">waiting</Text>
       } },
     ]
   }

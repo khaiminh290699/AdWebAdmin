@@ -20,17 +20,12 @@ function PostUpdate() {
       const { setting } = state;
       return (
         <Modal
-          width={600}
+          width={900}
           visible={true}
           title={<Text>Setting for account: <Text strong>{state.setting.username}</Text></Text>}
           onCancel={action.onCancel}
           footer={<></>}
         >
-          <Space>
-            <Text strong style={{ display: "inline-block", width: "150px" }}>Create only </Text><Text strong>:</Text>
-            <Checkbox disabled={true} checked={setting.is_create_only}></Checkbox>
-          </Space>
-          <p />
           {
             state.setting.setting_id ?
             (
@@ -44,29 +39,7 @@ function PostUpdate() {
               </Space>
             )
             :
-            (
-              <>
-                <Space>
-                  <Text strong style={{ display: "inline-block", width: "150px" }}>Select forums </Text><Text strong>:</Text>
-                  <Select value={state.selectingForum} onChange={action.onSelectForumChange} style={{ width: "300px" }} >
-                    {
-                      state.forums.filter((forum) => forum.web_key === setting.web_key).map(forum => {
-                        return (
-                          <Select.Option value={forum.forum_id}>{forum.forum_name}</Select.Option>
-                        )
-                      })
-                    }
-                  </Select>
-                  <Button type="primary" disabled={!state.selectingForum} onClick={action.onAddForum} >Select</Button>
-                </Space>
-                <p/>
-                {
-                  setting.forumSettings.map((forum, index) => {
-                    return <Tag color="magenta" style={{ marginBottom: "5px" }} closable={state.setting.setting_id ? false : true} onClose={(event) => action.onRemoveForum(event, index)}><WebTooltip web={forum} >{ forum.forum_name }</WebTooltip></Tag>
-                  })
-                }
-              </>
-            )
+            null
           }
           <p />
           <Space>
@@ -79,6 +52,18 @@ function PostUpdate() {
                 <>
                   <div>
                     <Space>
+                      <Text strong>Forum :</Text>
+                      <Select style={{ width: "250px" }} value={timer.forum_id} onChange={(value) => action.onChangeSelectForum(index, value)}>
+                        {
+                          state.forums.map((forum) => {
+                            return (
+                              <Select.Option value={forum.forum_id}>
+                                {forum.forum_name} <Text type="secondary">({forum.web_name})</Text> 
+                              </Select.Option>
+                            )
+                          })
+                        }
+                      </Select>
                       <Text strong>Timer :</Text>
                       <TimePicker 
                         format={format} 

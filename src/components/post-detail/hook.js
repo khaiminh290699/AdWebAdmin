@@ -10,7 +10,7 @@ import Socket from "../../socket";
 import { CheckCircleTwoTone  } from '@ant-design/icons';
 
 
-const { Text } = Typography;
+const { Text, Link } = Typography;
 
 function usePostDetailHook() {
   let socket = null;
@@ -35,12 +35,13 @@ function usePostDetailHook() {
     const { data: { post, accountSettings, forums, progressing } } = rs;
     state = { ...state, isLoading: false, post, accountSettings, forums, progressing }
     setState(state)
-
-    socket = await new Socket().connect("users");
-    socket.on(`progressing_${progressing.id}`, (data) => {
-      state.progressing = data;
-      setState({ ...state });
-    })
+    if (progressing) {
+      socket = await new Socket().connect("users");
+      socket.on(`progressing_${progressing.id}`, (data) => {
+        state.progressing = data;
+        setState({ ...state });
+      })
+    }
 
   }, []);
 
@@ -54,15 +55,7 @@ function usePostDetailHook() {
     accountColumns: [
       { title: "Account", width: "10%", render: (data) => <Text strong>{data.username}</Text> },
       { title: "Password", width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
-      {
-        title: "Create only", with: "5%", render: (data) => {
-          if (data.is_create_only) {
-            return <div style={{ textAlign: 'center' }}><CheckCircleTwoTone twoToneColor="#52c41a" /></div>
-          }
-          return null
-        }
-      },
-      { title: "Timer", width: "30%", render: (data) => {
+      { title: "Timer", width: "50%", render: (data) => {
         if (!data.timerSettings.length) {
           return <Text type="warning" strong>- Not Setting Yet</Text>
         }
@@ -72,7 +65,7 @@ function usePostDetailHook() {
               data.timerSettings.map((timer) => {
                 return (
                   <div>
-                    - <Text strong>{timer.timer_at}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>
+                    - At <Text strong>{timer.timer_at}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>, with forum Forums: <Link href={timer.forum_url}><Text strong>{timer.forum_name}</Text></Link> <Text type="secondary">({timer.web_name})</Text>.
                   </div>
                 )
               })
@@ -80,8 +73,10 @@ function usePostDetailHook() {
           </>
         )
       } },
-      { title: "Forum", width: "30%", render: (data) => {
-        console.log(data)
+      { title: <Text>Forum <Text type="secondary">(choose for posting when create)</Text></Text>, width: "30%", render: (data) => {
+        if (!data.forumSettings.length) {
+          return <Text type="secondary" italic>Not thing</Text>
+        }
         return (
           <>
             {

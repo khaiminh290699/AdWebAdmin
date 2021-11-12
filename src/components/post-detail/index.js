@@ -56,19 +56,24 @@ function PostDetail() {
         </Button>
       </Space>
       <Divider />
-      <Card title={<Text>Progressing For Posting</Text>}>
-        <Space direction="horizontal" size="middle" >
-          <Text strong>ID : <Link to={`/progressing/${state.progressing.id}`}>{state.progressing.id}</Link></Text>
-        </Space>
-        <p/>
-        <Space direction="horizontal" size="middle" >
-          <Text strong>Status :</Text>
-          { tag() }
-        </Space>
-        <p/>
-        { progressingBar() }
-        <p />
-      </Card>
+      {
+        state.progressing ? 
+        (
+          <Card title={<Text>Progressing For Posting</Text>}>
+            <Space direction="horizontal" size="middle" >
+              <Text strong>ID : <Link to={`/progressing/${state.progressing.id}`}>{state.progressing.id}</Link></Text>
+            </Space>
+            <p/>
+            <Space direction="horizontal" size="middle" >
+              <Text strong>Status :</Text>
+              { tag() }
+            </Space>
+            <p/>
+            { progressingBar() }
+            <p />
+          </Card>
+        ) : null
+      }
       <p/>
       <Card title="Content">
         <Paragraph>

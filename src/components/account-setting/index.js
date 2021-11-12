@@ -16,17 +16,12 @@ function AccountSetting() {
       const setting = context.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       return (
         <Modal
-          width={600}
+          width={900}
           visible={true}
           title={<Text>Setting for account: <Text strong>{state.setting.username}</Text></Text>}
           onCancel={action.onCancel}
           footer={<></>}
         >
-          <Space>
-            <Text strong style={{ display: "inline-block", width: "150px" }}>Create only </Text><Text strong>:</Text>
-            <Checkbox checked={setting.is_create_only} onChange={action.onCheckCreateOnly}></Checkbox>
-          </Space>
-          <p />
           <Space>
             <Text strong style={{ display: "inline-block", width: "150px" }}>Select forums </Text><Text strong>:</Text>
             <Select value={state.selectingForum} onChange={action.onSelectForumChange} style={{ width: "300px" }} >
@@ -57,6 +52,18 @@ function AccountSetting() {
                 <>
                   <div>
                     <Space>
+                      <Text>Forum :</Text>
+                      <Select style={{ width: "250px" }} value={timer.forum_id} onChange={(value) => action.onChangeSelectForum(index, value)}>
+                        {
+                          state.forums.map((forum) => {
+                            return (
+                              <Select.Option value={forum.id}>
+                                {forum.forum_name} <Text type="secondary">({forum.web_name})</Text>
+                              </Select.Option>
+                            )
+                          })
+                        }
+                      </Select>
                       <Text strong>Timer :</Text>
                       <TimePicker 
                         format={format} 
