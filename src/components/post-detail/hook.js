@@ -24,7 +24,8 @@ function usePostDetailHook() {
     post: {}, 
     accountSettings: [], 
     forums: [] ,
-    progressing: {}
+    progressing: {},
+    total_click: 0
   });
 
   useEffect(async () => {
@@ -32,8 +33,8 @@ function usePostDetailHook() {
     if (rs.status != 200) {
       return;
     }
-    const { data: { post, accountSettings, forums, progressing } } = rs;
-    state = { ...state, isLoading: false, post, accountSettings, forums, progressing }
+    const { data: { post, accountSettings, forums, progressing, total_click } } = rs;
+    state = { ...state, isLoading: false, post, accountSettings, forums, progressing, total_click }
     setState(state)
     if (progressing) {
       socket = await new Socket().connect("users");

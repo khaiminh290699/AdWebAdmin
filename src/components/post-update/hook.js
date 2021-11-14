@@ -48,7 +48,7 @@ function usePostUpdateHook(props = {}) {
       return;
     }
 
-    const { data: { post, accountSettings, forums } } = rs;
+    const { data: { post, accountSettings } } = rs;
 
     const { title, content } = post;
 
@@ -57,7 +57,13 @@ function usePostUpdateHook(props = {}) {
     
     state.title = title;
     state.content = content;
-    state.forums = forums;
+
+    const res_forum = await api.listForums([], { forum_name: -1 });
+    if (res_forum.status != 200) {
+      alert(res_forum.message);
+    } else {
+      state.forums = res_forum.data.forums;
+    }
     state.editorState = EditorState.createWithContent(
       ContentState.createFromBlockArray(
         DraftPasteProcessor.processHTML(content)
@@ -135,7 +141,7 @@ function usePostUpdateHook(props = {}) {
         web_url: account.web_url,
         web_id: account.web_id,
         web_name: account.web_name,
-        forumSettings: [...state.forums.filter((forum) => forum.web_key === account.web_key)],
+        forumSettings: [],
         timerSettings: [],
         is_update: true
       })
@@ -188,7 +194,7 @@ function usePostUpdateHook(props = {}) {
 
     onAddTimer: () => {
       state.setting.timerSettings.push({
-        forum_id: state.forums[0].forum_id,
+        forum_id: state.forums.filter(forum => forum.web_id === state.setting.web_id)[0].id,
         timer_at: moment(),
         from_date: moment().startOf("date"),
         to_date: moment().endOf("date")
@@ -279,7 +285,7 @@ function usePostUpdateHook(props = {}) {
                 <div>
                   {
                     data.timerSettings.map((timer) => {
-                      const forum = state.forums.filter((forum) => forum.forum_id === timer.forum_id)[0];
+                      const forum = state.forums.filter((forum) => forum.id === timer.forum_id)[0];
                       return (
                         <div>
                           - <Text strong>{moment(timer.timer_at).isValid() ? moment(timer.timer_at).format(format) : timer.timer_at}</Text>, from <Text strong>{moment(timer.from_date).format("DD/MM/YYYY")}</Text> to <Text strong>{moment(timer.to_date).format("DD/MM/YYYY")}</Text>, with forum forums: <Link href={forum.forum_url}><Text strong>{forum.forum_name}</Text></Link> <Text type="secondary">({forum.web_name})</Text>.

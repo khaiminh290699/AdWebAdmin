@@ -37,7 +37,16 @@ function ContentEditor() {
         <Button type="primary" onClick={action.onAddLink}><LinkOutlined /> Add link</Button>
       </Space>
       <Divider/>
-      <Button style={{ float: "left" }} onClick={() => action.onNext("forums")}> <DoubleLeftOutlined/> Forums </Button>
+      {
+        context.selectedPosts.length ?
+        (
+          <Button style={{ float: "left" }} onClick={() => action.onNext("forums")}> <DoubleLeftOutlined/> Forums </Button>
+        )
+        :
+        (
+          <Button style={{ float: "left" }} onClick={() => action.onNext("search")}> <DoubleLeftOutlined/> Search page </Button>
+        )
+      }
       <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("account")}> Account setting <DoubleRightOutlined/></Button>
     </Card>
   )

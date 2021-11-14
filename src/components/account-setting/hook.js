@@ -17,7 +17,7 @@ function useAccountSettingHook() {
   useEffect(async () => {
     if (state.reload) {
       const { state: { selectedForums, accountSettings } } = context;
-      const rs = await api.listAccounts([{ web_key: { $in: selectedForums.map((selectedForum) => selectedForum.web_key) } }], { web_name: 1 });
+      const rs = await api.listAccounts([], { web_name: -1 });
       
       if (rs.status != 200) {
         return;
@@ -25,7 +25,7 @@ function useAccountSettingHook() {
 
       const { data: { accounts } } = rs;
 
-      const rs2 = await api.listForums([{ "forums.id": { $in: selectedForums.map((selectedForum) => selectedForum.id) } }], { forum_name: 1 })
+      const rs2 = await api.listForums([], { forum_name: -1 })
       const { data: { forums } } = rs2;
 
       setState({ ...state, isLoading: false, accounts, forums, reload: false })
@@ -46,6 +46,7 @@ function useAccountSettingHook() {
             forums: [...selectedForums.filter((forum) => forum.web_key === account.web_key)],
             timers: [],
           })
+
         }
       } else {
         if (index != -1) {
@@ -103,7 +104,8 @@ function useAccountSettingHook() {
       if (setting.forums.some((forum) => forum.id === state.selectingForum)) {
         return;
       }
-      const forum = context.state.selectedForums.filter((selectedForum) => selectedForum.id === state.selectingForum)[0];
+      // const forum = context.state.selectedForums.filter((selectedForum) => selectedForum.id === state.selectingForum)[0];
+      const forum = state.forums.filter(forum => forum.id === state.selectingForum)[0]
       setting.forums.push(forum);
       context.dispatch({ data: { accountSettings: [...context.state.accountSettings] }})
     },
@@ -122,7 +124,7 @@ function useAccountSettingHook() {
     onAddTimer: () => {
       const setting = context.state.accountSettings.filter((accountSetting) => accountSetting.account_id === state.setting.id)[0];
       setting.timers.push({
-        forum_id: state.forums[0].id,
+        forum_id: state.forums.filter((forum) => forum.web_id === setting.web.id)[0].id,
         timer_at: moment(),
         from_date: moment().startOf("date"),
         to_date: moment().endOf("date")
@@ -189,7 +191,7 @@ function useAccountSettingHook() {
       { title: "Account", width: "10%", render: (data) => <Text>{data.username}</Text> },
       { title: "Password",  width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Website",  width: "15%", render: (data) => <WebTooltip web={data}><Link href={data.web_url}>{data.web_name}</Link></WebTooltip> },
-      { title: "Setting",  width: "25%", render: (data) => {
+      { title: "Setting",  width: "10%", render: (data) => {
         const { state: { accountSettings } } = context;
         const selected = accountSettings.filter((accountSetting) => accountSetting.account_id === data.id)[0];
         if (selected) {

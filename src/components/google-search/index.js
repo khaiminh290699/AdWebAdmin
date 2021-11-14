@@ -29,9 +29,18 @@ function GoogleSearch() {
         }
     />
     <Divider/>
-    <Tooltip title={<Text strong italic>View forums of posts and choosing the forums</Text>} >
-      <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("forums")}> Forums <DoubleRightOutlined /> </Button>
-    </Tooltip>
+    {
+      context.selectedPosts.length ?
+      (
+        <Tooltip title={<Text strong italic>View forums of posts and choosing the forums</Text>} >
+          <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("forums")}> Forums <DoubleRightOutlined /> </Button>
+        </Tooltip>
+      )
+      :
+      (
+        <Button style={{ float: "right" }} type="primary" onClick={() => action.onNext("content")}> Write content <DoubleRightOutlined /> </Button>
+      )
+    }
   </Card>
   )
 }

@@ -75,15 +75,15 @@ function usePostForumsHook() {
     },
 
     onNext: (pageProgressing) => {
-      if (pageProgressing === "content") {
-        let { state: { selectedForums } } = context;
-        if (!selectedForums.length) {
-          setState({ ...state, error: { forums: "You must selecte some forums" } })
-          return;
-        } else {
-          setState({ ...state, error: { } })
-        }
-      }
+      // if (pageProgressing === "content") {
+      //   let { state: { selectedForums } } = context;
+      //   if (!selectedForums.length) {
+      //     setState({ ...state, error: { forums: "You must selecte some forums" } })
+      //     return;
+      //   } else {
+      //     setState({ ...state, error: { } })
+      //   }
+      // }
       context.dispatch({ type: "pageProgressing", data: { pageProgressing } });
     }
 

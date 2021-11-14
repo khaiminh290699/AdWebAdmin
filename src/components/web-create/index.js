@@ -1,13 +1,13 @@
-import { Button, Card, Divider, Input, InputNumber, Space, Typography, Select, Tooltip, Modal, Tag } from "antd";
+import { Button, Card, Divider, Input, InputNumber, Space, Typography, Select, Tooltip, Modal, Tag, Table } from "antd";
 import React, { useState } from "react";
 import useWebCreateHook from "./hook";
-import { PlusOutlined, MinusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { PlusOutlined, MinusOutlined, DeleteOutlined, EditOutlined, CloseOutlined } from "@ant-design/icons";
 import slug from "slug";
 
 const { Text } = Typography;
 
 function WebCreate() {
-  const { state, action, setState } = useWebCreateHook();
+  const { state, action, value, setState } = useWebCreateHook();
 
   return (
     <Card title="Web Create">
@@ -25,6 +25,41 @@ function WebCreate() {
         <Text strong style={{ display: "inline-block", width: "100px" }}>Web key</Text><Text strong> : </Text>
         <Input value={slug(state.web_name || "", "_")} disabled={true} style={{ width: "900px" }}></Input>
       </Space>
+
+      <Divider />
+
+      <Text strong>Forums :</Text>
+      <p />
+      <Space>
+        <Text strong>Forum name :</Text>
+        <Input value={state.forum_name} style={{ width: "250px" }} onChange={(event) => setState({ ...state, forum_name: event.target.value })} />
+        <Text strong>Forum URL :</Text>
+        <Input value={state.forum_url} style={{ width: "500px" }} onChange={(event) => setState({ ...state, forum_url: event.target.value })} />
+        {
+          state.updateForum != null ? 
+          (
+            <>
+              <Button type="primary" style={{ backgroundColor: "#fadb14", borderColor: "#fadb14" }}
+                onClick={action.onEditForum}
+              ><EditOutlined /> Edit</Button>
+              <Text strong type="danger"><CloseOutlined onClick={() => setState({ ...state, updateForum: null, forum_url: null, forum_name: null  })} /></Text>
+            </>
+          )
+          :
+          (
+            <>
+              <Button type="primary" onClick={action.onAddForum}><PlusOutlined /> Add</Button>
+            </>
+          )
+        }
+      </Space>
+      <p />
+      <Table 
+        dataSource={state.forums}
+        columns={value.columns}
+        pagination={{ pageSize: 5, current: 1, pageSizeOptions: [5] }}
+      />
+
       <Divider />
 
       <Text strong>Login account action :</Text>
@@ -77,6 +112,8 @@ function ActionInput(props) {
     key: null,
     value: null,
     modal: null,
+    output_attribute: null,
+    output_value: null
   })
 
   const action = {
@@ -88,6 +125,7 @@ function ActionInput(props) {
         ancestors: [],
         action: "click", 
         input: null,
+        output: {},
         type
       })
       setActions([...actions]);
@@ -98,10 +136,12 @@ function ActionInput(props) {
       if (key === "action") {
         if (value === "input") {
           actions[index].input = "username";
+          actions[index].output = {};
         }
 
         if (value === "click") {
           actions[index].input = null;
+          actions[index].output = {};
         }
       }
 
@@ -115,6 +155,7 @@ function ActionInput(props) {
             ancestors: [],
             action: "input", 
             input: "content",
+            output: {},
             type
           }
         }
@@ -133,6 +174,7 @@ function ActionInput(props) {
             ancestors: [],
             action: "click", 
             input: null,
+            output: {},
             type
           },
           ...actions.slice(index), 
@@ -194,9 +236,24 @@ function ActionInput(props) {
     },
 
     onCancel: () => {
-      setState({ ...state, index: null, key: null, value: null, modal: null });
+      setState({ ...state, index: null, key: null, value: null, modal: null, output_attribute: null, output_value: null });
     },
 
+    onAddOutput: () => {
+      const { output_attribute, output_value } = state;
+
+      actions[state.index].output = {
+        ...actions[state.index].output,
+        [output_attribute]: output_value
+      }
+      
+      setActions([...actions])
+    },
+
+    onRemoveOutput: (key) => {
+      delete actions[state.index].output[key];
+      setActions([...actions])
+    }
   }
 
   const modal = () => {
@@ -290,6 +347,45 @@ function ActionInput(props) {
             </>
           ) : null
         }
+
+        {
+          state.modal === "outputs" ?
+          (
+            <>
+              <Space>
+                <Text strong style={{ display: "inline-block", width: "70px" }}>Output </Text><Text>:</Text>
+              </Space>
+              <p />
+              <div>
+                {
+                  Object.keys(actions[state.index].output).map((key) => {
+                    return (
+                      <Space style={{ marginBottom: "5px" }}>
+                        + Get attribute <Tag>{key}</Tag> for '{actions[state.index].output[key]}' value <Text strong type="danger" onClick={() => action.onRemoveOutput(key)}><CloseOutlined /></Text>
+                      </Space>
+                    )
+                  })
+                }
+              </div>
+              <p />
+              <Space>
+                <Text strong style={{ display: "inline-block", width: "70px" }}>Attribute output </Text><Text>:</Text>
+                <Input value={state.output_attribute} style={{ display: "inline-block", width: "250px" }} onChange={(event) => setState({ ...state, output_attribute: event.target.value })}></Input>
+                <Text strong>Output value :</Text>
+                <Select style={{ display: "inline-block", width: "250px" }} value={state.output_value} onChange={(value) => setState({ ...state, output_value: value })}>
+                  {
+                    [{ key: "forum_name", value: "Forum Name" }, { key: "forum_url", value: "Forum Link" },].map((item) => {
+                      return (
+                        <Select.Option value={item.key}>{item.value}</Select.Option>
+                      )
+                    })
+                  }
+                </Select>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => action.onAddOutput(state.index)}>Add</Button>
+              </Space>
+            </>
+          ) : null
+        }
       </Modal>
     }
   }
@@ -303,10 +399,10 @@ function ActionInput(props) {
           if (item.tag != "iframe") {
 
             return <>
-              <Space style={{ width: "1020px" }}>
-                <Text strong style={{ width: "20px", display: "inline-block" }}>{index + 1} : </Text>
+              <Space style={{ width: "1040px" }}>
+                <Text strong style={{ width: "5px", display: "inline-block" }}>{index + 1}</Text>
                 <Text strong>Tag: </Text>
-                <Select value={item.tag} style={{ width: "75px" }} onChange={(value) => action.onChangeAction(index, "tag", value)}>
+                <Select value={item.tag} style={{ width: "70px" }} onChange={(value) => action.onChangeAction(index, "tag", value)}>
                   {
                     ["a", "button", "div", "iframe", "input", "li", "span"].map((option) => <Select.Option value={option}>{option}</Select.Option>)
                   }
@@ -316,10 +412,15 @@ function ActionInput(props) {
                 <Input value={item.text} placeholder="(NULL)" style={{ width: "75px" }} onChange={(event) => action.onChangeAction(index, "text", event.target.value)} />
 
                 <Text strong>Attributes: </Text>
-                <Button style={{ width: "125px" }} type="dashed" block icon={<PlusOutlined />} onClick={() => setState({ ...state, modal: "attributes", index })} >Attributes</Button>
+                <Button style={{ width: "100px" }} type="dashed" block icon={<PlusOutlined />} onClick={() => setState({ ...state, modal: "attributes", index })} >Setting</Button>
 
                 <Text strong>Ancestors: </Text>
-                <Button style={{ width: "125px" }} type="dashed" block icon={<PlusOutlined />} onClick={() => setState({ ...state, modal: "ancestors", index })} >Ancestors</Button>
+                <Button style={{ width: "100px" }} type="dashed" block icon={<PlusOutlined />} onClick={() => setState({ ...state, modal: "ancestors", index })} >Setting</Button>
+
+                <Text strong style={{ width: "33px", display: "inline-block" }}>No. :</Text>
+                <Tooltip title="This is the number of element in list (if it negative it is from the end (EX: -1 is the laset element in list))">
+                  <InputNumber value={item.number} placeholder="(NULL)" style={{ width: "50px" }} onChange={(value) => action.onChangeAction(index, "number", value)} />
+                </Tooltip>
 
                 <Text strong> Action :</Text>
                 <Select value={item.action} style={{ width: "75px" }} onChange={(value) => action.onChangeAction(index, "action", value)}>
@@ -333,7 +434,7 @@ function ActionInput(props) {
                   (
                     <>
                       <Text strong> Input :</Text>
-                      <Select value={item.input} style={{ width: "125px" }} onChange={(value) => action.onChangeAction(index, "input", value)}>
+                      <Select value={item.input} style={{ width: "100px" }} onChange={(value) => action.onChangeAction(index, "input", value)}>
                         {
                           ["username", "password", "content", "title"].map((option) => <Select.Option value={option}>{option}</Select.Option>)
                         }
@@ -341,9 +442,19 @@ function ActionInput(props) {
                     </>
                   ) : null
                 }
+
+                {
+                  item.action === "find" ?
+                  (
+                    <>
+                      <Text strong> Output :</Text>
+                      <Button style={{ width: "75px" }} type="dashed" block icon={<PlusOutlined />} onClick={() => setState({ ...state, modal: "outputs", index })} ></Button>
+                    </>
+                  ) : null
+                }
               </Space>
               
-              <Space style={{ width: "70px" }}>
+              <Space size="small">
                 <Button onClick={() => action.onAppendAction(index + 1)}><PlusOutlined /></Button>
                 <Button onClick={() => action.onRemoveAction(index)}><MinusOutlined /></Button>
               </Space>
@@ -352,7 +463,7 @@ function ActionInput(props) {
 
               <Space direction="vertical">
                 <Text type="danger">
-                  *{item.tag} {item.text ? `tag contain text '${item.text}'` : ''}
+                  * {item.action} on: {item.tag} {item.text ? `tag contain text '${item.text}'` : ''}
                 </Text>
                 {
                   Object.keys(item.attributes).length ?
@@ -382,6 +493,25 @@ function ActionInput(props) {
                     )
                   })
                 }
+
+                {
+                  Object.keys(item.output).length ?
+                  <Text type="success">
+                    * Output :
+                  </Text>
+                  : null
+                }
+                {
+                  Object.keys(item.output).map((key) => {
+                    return (
+                      <div>
+                        <Space style={{ marginBottom: "5px" }}>
+                          + Get attribute <Tag>{key}</Tag> for '{item.output[key]}' value.
+                        </Space>
+                      </div>
+                    )
+                  })
+                }
               </Space>
 
               <Divider />
@@ -390,8 +520,8 @@ function ActionInput(props) {
 
           return (
             <>
-              <Space style={{ width: "1020px" }}>
-                <Text strong style={{ width: "20px", display: "inline-block" }}>{index + 1} : </Text>
+              <Space style={{ width: "1040px" }}>
+                <Text strong style={{ width: "5px", display: "inline-block" }}>{index + 1}</Text>
                 <Text strong>Tag: </Text>
                 <Select value={item.tag} style={{ width: "75px" }} onChange={(value) => action.onChangeAction(index, "tag", value)}>
                   {
@@ -405,11 +535,11 @@ function ActionInput(props) {
                 </Tooltip>
 
                 <Text strong style={{ width: "80px", display: "inline-block" }}>Action: </Text>
-                <Input style={{ width: "125px" }} value={item.action} disabled />
+                <Input style={{ width: "100px" }} value={item.action} disabled />
 
                 <Space>
                   <Text strong style={{ width: "70px", display: "inline-block" }}>Input: </Text>
-                  <Select value={item.input} style={{ width: "125px" }} onChange={(value) => action.onChangeAction(index, "input", value)}>
+                  <Select value={item.input} style={{ width: "100px" }} onChange={(value) => action.onChangeAction(index, "input", value)}>
                     {
                       ["username", "password", "title", "content"].map((option) => <Select.Option value={option}>{option}</Select.Option>)
                     }

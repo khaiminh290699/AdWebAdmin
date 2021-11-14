@@ -55,7 +55,7 @@ function AccountSetting() {
                       <Text>Forum :</Text>
                       <Select style={{ width: "250px" }} value={timer.forum_id} onChange={(value) => action.onChangeSelectForum(index, value)}>
                         {
-                          state.forums.map((forum) => {
+                          state.forums.filter(forum => forum.web_id === setting.web.id).map((forum) => {
                             return (
                               <Select.Option value={forum.id}>
                                 {forum.forum_name} <Text type="secondary">({forum.web_name})</Text>

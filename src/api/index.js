@@ -161,24 +161,32 @@ class Api {
   }
 
   getTotal = async (from, to) => {
-    return await this.api.post(`/statistic/get-total`, { from, to });
+    return await this.api.post(`/statistic/get-total`);
   }
 
   updatePost = async (post, accountSettings) => {
     return await this.api.post(`/post/update`, { post, accountSettings });
   }
 
-  createWeb = async (web_url, web_name, web_key, actions) => {
-    return await this.api.post(`/web/upsert`, { web_url, web_name, web_key, actions });
+  createWeb = async (web_url, web_name, web_key, actions, forums = []) => {
+    return await this.api.post(`/web/upsert`, { web_url, web_name, web_key, actions, forums });
   }
 
-  updateWeb = async (id, web_url, web_name, web_key, actions) => {
-    return await this.api.post(`/web/upsert`, { id, web_url, web_name, web_key, actions });
+  updateWeb = async (id, web_url, web_name, web_key, actions, forums = []) => {
+    return await this.api.post(`/web/upsert`, { id, web_url, web_name, web_key, actions, forums });
   }
 
   getOneWeb = async (id) => {
     return await this.api.get(`/web/${id}`);
 
+  }
+  
+  getTopPostForum = async (from, to, limit) => {
+    return await this.api.post(`/statistic/get-top-post-forum`, { from, to, limit });
+  }
+
+  getTopClickForum = async (from, to, limit) => {
+    return await this.api.post(`/statistic/get-top-click-forum`, { from, to, limit });
   }
 }
 

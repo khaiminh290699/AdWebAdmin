@@ -61,7 +61,7 @@ function usePostTimerHook() {
     limit: 5,
     columns: [
       { title: "Website", render: (data) => <WebTooltip web={data} ><Typography.Link href={data.web_url} type="secondary" strong>{data.web_name}</Typography.Link></WebTooltip> },
-      { title: "Forums", render: (data) => <Typography.Link href={data.forum_url} strong>{data.forum_name}</Typography.Link> },
+      { title: "Forums", render: (data) => <><Typography.Link href={data.forum_url} strong>{data.forum_name}</Typography.Link> { data.forum_deleted ? <Text strong type="danger">(deleted)</Text> : null } </> },
       { title: "User", render: (data) => <Text strong>{data.user_username}</Text> },
       { title: "Account", render: (data) => <Text strong>{data.username}</Text> },
       { title: "Password", render: (data) => <PasswordHidden password={data.password} /> },

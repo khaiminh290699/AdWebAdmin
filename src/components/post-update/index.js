@@ -55,9 +55,15 @@ function PostUpdate() {
                       <Text strong>Forum :</Text>
                       <Select style={{ width: "250px" }} value={timer.forum_id} onChange={(value) => action.onChangeSelectForum(index, value)}>
                         {
-                          state.forums.map((forum) => {
+                          console.log(state.forums.filter(forum => forum.web_id === setting.web_id))
+                          
+                        }{
+                          console.log(timer)
+                        }
+                        {
+                          state.forums.filter(forum => forum.web_id === setting.web_id).map((forum) => {
                             return (
-                              <Select.Option value={forum.forum_id}>
+                              <Select.Option value={forum.id}>
                                 {forum.forum_name} <Text type="secondary">({forum.web_name})</Text> 
                               </Select.Option>
                             )

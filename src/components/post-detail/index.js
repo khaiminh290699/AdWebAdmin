@@ -1,4 +1,4 @@
-import { Card, Table, Spin, Typography, Tag, Progress, Space, Divider, Button } from "antd";
+import { Card, Table, Spin, Typography, Tag, Progress, Space, Divider, Button, Input } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import WebTooltip from "../web-tooltip";
@@ -76,19 +76,29 @@ function PostDetail() {
       }
       <p/>
       <Card title="Content">
+        <Space>
+          <Text strong>Title :</Text>
+          <Input disabled value={state.post.title} />
+        </Space>
+        <p />
+        <Space>
+          <Text strong>Total Click :</Text>
+          <Text>{ state.total_click }</Text>
+        </Space>
+        <p/>
         <Paragraph>
           <pre>
             <div dangerouslySetInnerHTML={{ __html: state.post.content }}></div>
           </pre>
         </Paragraph>
-        <div>
+        {/* <div>
           <Text strong>Forums : </Text> 
           {
             state.forums.map((forum) => {
               return <Tag color="cyan"><WebTooltip web={forum}>{forum.forum_name}</WebTooltip></Tag>
             })
           }
-        </div>
+        </div> */}
       </Card>
       <br/>
       <Card title="Account Setting">
