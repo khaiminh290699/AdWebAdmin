@@ -61,6 +61,7 @@ function useWebCreateHook() {
     },
 
     onCreate: async () => {
+      console.log(state.forums.filter((forum) => !forum.is_deleted));
       if (!state.web_name && !state.web_url && !state.loginActions.length && !state.logoutActions.length && !state.postActions.length) {
         return;
       }

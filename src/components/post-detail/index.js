@@ -48,14 +48,21 @@ function PostDetail() {
 
   return (
     <Card title={state.isLoading ? <>Loading <Spin/></> : <>Post: <Text strong type="secondary">{state.post.title} { state.post.is_deleted ? <Tag color="red">Deleted</Tag> : null }</Text></>} >
-      <Space>
-        <Button style={{ backgroundColor: "yellow" }}>
-          <Link to={`/post/update/${state.post.id}`}>
-           <Text strong style={{ color: "black" }}>Update</Text>
-          </Link>
-        </Button>
-      </Space>
-      <Divider />
+      {
+        state.post && state.post.user_id === JSON.parse(localStorage.getItem("user")).id ?
+        (
+          <>
+            <Space>
+              <Button style={{ backgroundColor: "yellow" }}>
+                <Link to={`/post/update/${state.post.id}`}>
+                <Text strong style={{ color: "black" }}>Update</Text>
+                </Link>
+              </Button>
+            </Space>
+            <Divider />
+          </>
+        ) : null
+      }
       {
         state.progressing ? 
         (
@@ -78,7 +85,7 @@ function PostDetail() {
       <Card title="Content">
         <Space>
           <Text strong>Title :</Text>
-          <Input disabled value={state.post.title} />
+          <Text> {state.post.title} </Text>
         </Space>
         <p />
         <Space>

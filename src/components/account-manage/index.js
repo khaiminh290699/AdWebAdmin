@@ -30,13 +30,32 @@ function AccountManage() {
         <>
           <Space>
             <Button type="primary" onClick={action.onCreate}><Text strong><PlusOutlined />Create new</Text></Button>
-            <Tooltip>
+            {/* <Tooltip>
               <Button type="default" onClick={action.onSave}><Text strong><SaveOutlined /> Save</Text></Button>
-            </Tooltip>
+            </Tooltip> */}
             {
               state.isLoading ? <Spin /> : <></>
             }
           </Space>
+          <p />
+          {
+            state.listInsertButDisable.map((item, index) => {
+              const web = state.webs.filter((webs) => webs.id === item.web_id)[0] || {};
+              return (
+                <>
+                <Space>
+                  <Text type="danger">Accounts username : <Text type="danger" strong>{item.username}</Text> of website {web.web_name} already exist but is disbale now.</Text>
+                </Space>
+                <p />
+                {
+                  index === state.listInsertButDisable.length - 1 ?
+                  <Text strong>Please contact with admin to enable this account</Text>
+                  : null
+                }
+                </>
+              )
+            })
+          }
           <Divider/>
         </>
         :

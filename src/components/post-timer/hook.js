@@ -8,6 +8,7 @@ import WebTooltip from "../web-tooltip";
 
 import { PauseCircleTwoTone, CheckCircleTwoTone, CloseCircleTwoTone  } from '@ant-design/icons';
 import useAppContext from "../../App.context";
+import { Link } from "react-router-dom";
 
 let socket = null;
 const { Text } = Typography;
@@ -64,7 +65,7 @@ function usePostTimerHook() {
       { title: "Forums", render: (data) => <><Typography.Link href={data.forum_url} strong>{data.forum_name}</Typography.Link> { data.forum_deleted ? <Text strong type="danger">(deleted)</Text> : null } </> },
       { title: "User", render: (data) => <Text strong>{data.user_username}</Text> },
       { title: "Account", render: (data) => <Text strong>{data.username}</Text> },
-      { title: "Password", render: (data) => <PasswordHidden password={data.password} /> },
+      { title: "Post", render: (data) => <Text strong><Link to={`/post/${ data.post_id }`} >{data.title}</Link></Text> },
       { title: "Timer setting", render: (data) =>  <Text>{data.timer_at}</Text>},
       { title: "Actual posting", render: (data) =>  <Text>{data.actutal_posting_timer ? moment(data.actutal_posting_timer).format("HH:mm") : "waiting"}</Text>},
       { title: "Status", render: (data) => {

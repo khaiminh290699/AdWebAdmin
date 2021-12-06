@@ -86,8 +86,8 @@ class Api {
     return await this.api.post("/web/forums", { wheres, order });
   }
 
-  createPost = async (post, forums, settings, backlinks) => {
-    return await this.api.post("/post/create", { post, forums, settings, backlinks });
+  createPost = async (post, forums, accounts, timerSettings, forumSettings, backlinks) => {
+    return await this.api.post("/post/create", { post, forums, accounts, timerSettings, forumSettings, backlinks });
   }
 
   getProgressing = async (id) => {
@@ -187,6 +187,14 @@ class Api {
 
   getTopClickForum = async (from, to, limit) => {
     return await this.api.post(`/statistic/get-top-click-forum`, { from, to, limit });
+  }
+
+  createAccount = async (username, password, web_id) => {
+    return await this.api.post(`/account/create`, { username, password, web_id });
+  }
+
+  updateAccount = async (id, username, password) => {
+    return await this.api.post(`/account/update`, { username, password, id });
   }
 }
 

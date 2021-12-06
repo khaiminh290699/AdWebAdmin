@@ -24,7 +24,8 @@ function useAccountManageHook() {
     isLoading: true,
     mode: null,
     page: 1,
-    total: 0
+    total: 0,
+    listInsertButDisable: []
   });
 
   useEffect(async () => {
@@ -59,25 +60,49 @@ function useAccountManageHook() {
       setState({ ...state, creating: true, web_id: state.webs[0].id });
     },
   
-    onEdit: () => {
+    onEdit: async () => {
       if (state.creating) {
         const user = JSON.parse(localStorage.getItem("user"));
         const web = state.webs.filter((webs) => webs.id === state.web_id)[0] || {};
+        const { username, password } = state;
+        const rs = await api.createAccount(username, new Buffer(password).toString("base64"), web.id);
+        if (rs.status != 200) {
+          alert(rs.message);
+          return;
+        }
+        const { data: { account } } = rs;
         state.accounts.unshift({
+          ...account,
           web_key: web.web_key,
           web_name: web.web_name,
           web_url: web.web_url,
           web_id: web.id,
-          username: state.username,
-          disable: true,
           user_username: user.username,
-          password: new Buffer(state.password).toString("base64"),
-        })
+        });
+
+        // state.accounts.unshift({
+        //   web_key: web.web_key,
+        //   web_name: web.web_name,
+        //   web_url: web.web_url,
+        //   web_id: web.id,
+        //   username: state.username,
+        //   disable: true,
+        //   user_username: user.username,
+        //   password: new Buffer(state.password).toString("base64"),
+        // })
       } else {
+        const { username, password } = state;
+        const { id } = state.accounts[state.edited.index];
+        const rs = await api.updateAccount(id, username, new Buffer(password).toString("base64"));
+        if (rs.status != 200) {
+          alert(rs.message);
+          return;
+        }
+        const { data: { account } } = rs;
         state.accounts[state.edited.index] = {
           ...state.accounts[state.edited.index],
-          username: state.username,
-          password: new Buffer(state.password).toString("base64")
+          username: account.username,
+          password: account.password
         }
       }
       
@@ -91,12 +116,12 @@ function useAccountManageHook() {
       if (rs.status != 200) {
         return;
       }
-      const { data: { accounts } } = rs;
-      setState({ ...state, accounts, isLoading: false });
+      const { data: { accounts, listInsertButDisable } } = rs;
+      setState({ ...state, accounts, listInsertButDisable, isLoading: false });
     },
 
     onAdminModeChange: async (checked) => {
-      setState({...state, isLoading: true})
+      setState({...state, isLoading: true, listInsertButDisable: []})
       if (checked === true) {
         const rs = await api.listAccounts([], { "users.username": -1, "accounts.username": -1, "webs.id": -1 }, state.page, value.limit, "admin")
         if (rs.status != 200) {
@@ -134,9 +159,13 @@ function useAccountManageHook() {
       if (rs.status != 200) {
         return;
       }
-      state.accounts[index] = {
-        ...state.accounts[index],
-        disable: rs.data.account.disable
+      if (state.mode != "admin") { 
+        state.accounts.splice(index, 1);
+      } else {
+        state.accounts[index] = {
+          ...state.accounts[index],
+          disable: rs.data.account.disable
+        }
       }
       setState({ ...state, accounts: [...state.accounts] })
     }
@@ -187,12 +216,7 @@ function useAccountManageHook() {
                   setState({ ...state, edited: { index, ...data }, username: data.username, password: new Buffer(data.password, "base64").toString("ascii") })
                 }}
               />
-              <DeleteOutlined style={{ fontSize: "18px", color: "#ff4d4f" }}
-                onClick={() => {
-                  state.accounts.splice(index, 1);
-                  setState({ ...state, accounts: [...state.accounts] })
-                }}
-              />
+              <StopOutlined style={{ fontSize: "18px", color: "#ff4d4f" }} onClick={() => action.onDisableAccount(index)} />
             </Space>
           )
         }

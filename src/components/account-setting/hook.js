@@ -144,9 +144,24 @@ function useAccountSettingHook() {
         content, title
       }
       const forums = selectedForums.map((selectedForum) => selectedForum.id);
-      const settings = accountSettings;
+      const accounts = accountSettings.map((setting) => setting.account_id);
+
+      const timerSettings = accountSettings.reduce((list, setting) => {
+        if (setting.timers) {
+          list.push(...setting.timers.map(timer => ({ ...timer, account_id: setting.account_id })));
+        } 
+        return list
+      }, [])
+    
+      const forumSettings = accountSettings.reduce((list, setting) => {
+        if (setting.forums) {
+          list.push(...setting.forums.map(forum => ({ forum_id: forum.id, account_id: setting.account_id })));
+        } 
+        return list
+      }, [])
+
       setState({ ...state, isLoading: true })
-      const rs = await api.createPost(post, forums, settings, backlinks);
+      const rs = await api.createPost(post, forums, accounts, timerSettings, forumSettings, backlinks);
       if (rs.status != 200) {
         setState({ ...state, isLoading: false, error: rs.message });
         return;
