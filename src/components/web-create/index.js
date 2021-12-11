@@ -143,6 +143,11 @@ function ActionInput(props) {
           actions[index].input = null;
           actions[index].output = {};
         }
+
+        if (value === "not_found") {
+          actions[index].input = null;
+          actions[index].output = {};
+        }
       }
 
       if (key === "tag") {
@@ -425,7 +430,7 @@ function ActionInput(props) {
                 <Text strong> Action :</Text>
                 <Select value={item.action} style={{ width: "75px" }} onChange={(value) => action.onChangeAction(index, "action", value)}>
                   {
-                    ["click", "input", "find"].map((option) => <Select.Option value={option}>{option}</Select.Option>)
+                    ["click", "input", "find", "not_found"].map((option) => <Select.Option value={option}>{option}</Select.Option>)
                   }
                 </Select>
 
@@ -463,7 +468,7 @@ function ActionInput(props) {
 
               <Space direction="vertical">
                 <Text type="danger">
-                  * {item.action} on: {item.tag} {item.text ? `tag contain text '${item.text}'` : ''}
+                  * {item.action != "not_found" ?  `${item.action} on` : "You doesn't want exist Element that has"}: {item.tag} {item.text ? `tag contain text '${item.text}'` : ''}
                 </Text>
                 {
                   Object.keys(item.attributes).length ?
