@@ -1,4 +1,4 @@
-import { Card, Typography, Table, Divider, Space, Button } from "antd";
+import { Card, Typography, Table, Divider, Space, Button, Spin } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import useWebManageHook from "./hook";
@@ -9,7 +9,7 @@ const { Text } = Typography;
 function WebManage() {
   const { state, value, action } = useWebManageHook();
   return (
-    <Card title={<Text>Web Manage</Text>}>
+    <Card title={<Text>Web Manage { state.isLoading ? <Spin/> : null }</Text>}>
       <Space>
         <Button type="primary">
           <Link to="/web/create">

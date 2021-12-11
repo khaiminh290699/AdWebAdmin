@@ -14,19 +14,20 @@ function useAppHook(){
   });
 
   useEffect(async () => {
-    const rs = await api.getInfo();
-
-    if (rs.status != 200) {
-      alert(rs.message);
-      if (rs.status === 403) {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+    if (localStorage.getItem("user")) {
+      const rs = await api.getInfo();
+      if (rs.status != 200) {
+        alert(rs.message);
+        if (rs.status === 403) {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        }
+        return;
       }
-      return;
+      const { data: { user } } = rs;
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ data: { user } })
     }
-    const { data: { user } } = rs;
-    localStorage.setItem("user", JSON.stringify(user));
-    dispatch({ data: { user } })
   }, [])
 
   return {

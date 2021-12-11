@@ -19,7 +19,11 @@ function MenuLayout(props) {
           <Menu.Item disabled={true}>
             <Text strong style={{ color: "white", float: "right" }}>Hi! {user.username}</Text>
           </Menu.Item>
-          <Menu.Item>
+          <Menu.Item onClick={() => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            window.location.reload();
+          }}>
             <Text strong style={{ color: "#bfbfbf", float: "right" }}>LogOut</Text>
           </Menu.Item>
         </>
