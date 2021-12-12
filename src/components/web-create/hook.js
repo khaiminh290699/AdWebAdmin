@@ -27,6 +27,7 @@ function useWebCreateHook() {
     updateForum: null,
     forum_name: null,
     forum_url: null,
+    page: 1
   })
 
   useEffect(async () => {
