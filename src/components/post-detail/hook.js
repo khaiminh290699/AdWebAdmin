@@ -54,7 +54,7 @@ function usePostDetailHook() {
 
   const value = {
     accountColumns: [
-      { title: "Account", width: "10%", render: (data) => <Text strong>{data.username}</Text> },
+      { title: "Account", width: "10%", render: (data) => <Text strong>{data.username} { data.disable ? <Text strong type="danger">(Disable)</Text> : null }</Text> },
       { title: "Password", width: "15%", render: (data) => <PasswordHidden password={data.password} /> },
       { title: "Timer", width: "50%", render: (data) => {
         if (!data.timerSettings.length) {
